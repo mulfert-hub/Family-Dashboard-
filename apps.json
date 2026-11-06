@@ -15,10 +15,13 @@
     {
       "id": "haushalt",
       "name": "Haushalt",
-      "beschreibung": "Alles rund ums Zuhause",
+      "beschreibung": "Putzplan: wiederkehrende Aufgaben abhaken, mit Erinnerung",
       "icon": "haushalt",
       "farbe": "#3f8fb0",
-      "status": "bald"
+      "status": "live",
+      "path": "haushalt/",
+      "repo": "mulfert-hub/Haushaltsapp",
+      "branch": "main"
     },
     {
       "id": "aufgaben",

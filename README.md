@@ -6,7 +6,7 @@ mit **einem** Icon auf dem Home-Bildschirm. Derzeit:
 | App | Status |
 | --- | --- |
 | 🍳 [Kochbuch](https://github.com/mulfert-hub/Kochbuch) | live, unter `…/Family-Dashboard-/kochbuch/` |
-| 🏠 Haushalt | in Arbeit |
+| 🏠 [Haushalt](https://github.com/mulfert-hub/Haushaltsapp) | live, unter `…/Family-Dashboard-/haushalt/` |
 | ✅ Aufgaben & Taschengeld (für unsere Tochter) | in Arbeit |
 
 Adresse nach dem Veröffentlichen: **https://mulfert-hub.github.io/Family-Dashboard-/**
