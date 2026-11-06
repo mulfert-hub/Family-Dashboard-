@@ -21,6 +21,8 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: ['icons/*.png', 'icons/*.svg'],
       workbox: {
+        // Zeigt Push-Mitteilungen aller Apps der Familie an (public/familie-push.js)
+        importScripts: ['familie-push.js'],
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,webmanifest}'],
         globIgnores: appPaths.map((p) => `${p}**`),
         navigateFallback: 'index.html',
