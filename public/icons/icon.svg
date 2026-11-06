@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#2f6b4f"/>
+  <g fill="none" stroke="#ffffff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Haus -->
+    <path d="M116 246l140-114 140 114"/>
+    <path d="M150 218v162h212V218"/>
+  </g>
+  <!-- Herz -->
+  <path fill="#ffffff" d="M256 344c-6 0-56-34-56-72 0-20 15-34 33-34 11 0 19 6 23 13 4-7 12-13 23-13 18 0 33 14 33 34 0 38-50 72-56 72z"/>
+</svg>
