@@ -20,9 +20,12 @@ Adresse nach dem Veröffentlichen: **https://mulfert-hub.github.io/Family-Dashbo
   installierten „Familie Ulfert“-App heraus im Vollbild und nicht in einem Browserfenster.
 - Jede App hat weiterhin ihren eigenen Service Worker (offline). Der Service Worker der Startseite lässt die
   Unterordner der Apps bewusst in Ruhe.
-- **Daten:** Alle Apps liegen unter derselben Adresse `mulfert-hub.github.io`. Das Kochbuch unter
-  `/Family-Dashboard-/kochbuch/` sieht deshalb dieselben Rezepte, Einstellungen und denselben API-Schlüssel wie das
-  bisherige Kochbuch unter `/Kochbuch/`, ohne dass etwas umgezogen werden muss.
+- **Daten:** Jede App auf dem Home-Bildschirm hat ihren eigenen Speicher. Auf dem iPhone gilt das auch, wenn zwei
+  Apps dieselbe Adresse haben. Das Kochbuch in „Familie Ulfert“ beginnt deshalb mit leerem Speicher:
+  1. **Mehr → Rezepterkennung mit Claude:** den API-Schlüssel noch einmal eintragen.
+  2. **Mehr → Synchronisation:** Daten-Repository und Token eintragen, damit die Rezepte herunterladen.
+     Ohne Synchronisation geht es über ein Backup: im alten Kochbuch exportieren, im neuen importieren.
+  3. Danach kann das einzelne Kochbuch-Icon vom Home-Bildschirm weg.
 
 ## Einrichtung (einmalig)
 
