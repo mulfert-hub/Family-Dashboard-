@@ -1,0 +1,32 @@
+{
+  "$kommentar": "Alle Apps der Familie. status: \"live\" = verlinkt, \"bald\" = Platzhalter. Apps mit \"repo\" werden beim Veröffentlichen aus ihrem eigenen Repository gebaut und unter \"path\" mitveröffentlicht.",
+  "apps": [
+    {
+      "id": "kochbuch",
+      "name": "Kochbuch",
+      "beschreibung": "Rezepte, Kochmodus und Einkaufsliste",
+      "icon": "kochbuch",
+      "farbe": "#e4573d",
+      "status": "live",
+      "path": "kochbuch/",
+      "repo": "mulfert-hub/Kochbuch",
+      "branch": "main"
+    },
+    {
+      "id": "haushalt",
+      "name": "Haushalt",
+      "beschreibung": "Alles rund ums Zuhause",
+      "icon": "haushalt",
+      "farbe": "#3f8fb0",
+      "status": "bald"
+    },
+    {
+      "id": "aufgaben",
+      "name": "Aufgaben & Taschengeld",
+      "beschreibung": "Für unsere Tochter: Aufgaben abhaken, Taschengeld im Blick",
+      "icon": "aufgaben",
+      "farbe": "#e0a21b",
+      "status": "bald"
+    }
+  ]
+}

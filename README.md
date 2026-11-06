@@ -1,1 +1,78 @@
-# Family-Dashboard-
+# Familie Ulfert
+
+Die gemeinsame App der Familie: eine Startseite, von der aus alle unsere privaten Apps erreichbar sind,
+mit **einem** Icon auf dem Home-Bildschirm. Derzeit:
+
+| App | Status |
+| --- | --- |
+| 🍳 [Kochbuch](https://github.com/mulfert-hub/Kochbuch) | live, unter `…/Family-Dashboard-/kochbuch/` |
+| 🏠 Haushalt | in Arbeit |
+| ✅ Aufgaben & Taschengeld (für unsere Tochter) | in Arbeit |
+
+Adresse nach dem Veröffentlichen: **https://mulfert-hub.github.io/Family-Dashboard-/**
+
+## So funktioniert es
+
+- Jede App bleibt in **ihrem eigenen Repository** und wird dort weiterentwickelt.
+- Beim Veröffentlichen baut der Workflow dieses Repositorys zuerst die Startseite und dann jede App aus
+  [`apps.json`](apps.json) und legt sie als Unterordner daneben (z. B. `kochbuch/`). Alles zusammen geht auf GitHub Pages.
+- Der installierte Bereich der Startseite umfasst die Unterordner. Deshalb öffnen sich die Apps aus der
+  installierten „Familie Ulfert“-App heraus im Vollbild und nicht in einem Browserfenster.
+- Jede App hat weiterhin ihren eigenen Service Worker (offline). Der Service Worker der Startseite lässt die
+  Unterordner der Apps bewusst in Ruhe.
+- **Daten:** Alle Apps liegen unter derselben Adresse `mulfert-hub.github.io`. Das Kochbuch unter
+  `/Family-Dashboard-/kochbuch/` sieht deshalb dieselben Rezepte, Einstellungen und denselben API-Schlüssel wie das
+  bisherige Kochbuch unter `/Kochbuch/`, ohne dass etwas umgezogen werden muss.
+
+## Einrichtung (einmalig)
+
+1. Repository → **Settings → Pages → Build and deployment → Source: „GitHub Actions“**.
+2. Änderungen in den Branch `main` bringen. Der Workflow `.github/workflows/deploy.yml` veröffentlicht automatisch.
+3. Die Adresse auf dem Handy öffnen und installieren:
+   - **iPhone (Safari):** Teilen-Symbol → **„Zum Home-Bildschirm“**
+   - **Android (Chrome):** Menü ⋮ → **„App installieren“**
+
+Neue Versionen der eingebundenen Apps kommen spätestens mit dem täglichen Neubau (03:17 UTC) an. Sofort geht es
+über **Actions → Deploy auf GitHub Pages → Run workflow**.
+
+## Eine neue App hinzufügen
+
+In [`apps.json`](apps.json) einen Eintrag ergänzen oder einen Platzhalter auf `"live"` stellen:
+
+```json
+{
+  "id": "haushalt",
+  "name": "Haushalt",
+  "beschreibung": "Alles rund ums Zuhause",
+  "icon": "haushalt",
+  "farbe": "#3f8fb0",
+  "status": "live",
+  "path": "haushalt/",
+  "repo": "mulfert-hub/Haushalt",
+  "branch": "main"
+}
+```
+
+Voraussetzungen an die App (das Kochbuch erfüllt sie bereits):
+
+- `npm ci` und `npm run build` bauen sie nach `dist/`.
+- Sie liest den Pfad aus der Umgebungsvariable `BASE_PATH` (bei Vite: `base: process.env.BASE_PATH ?? '/'`)
+  und nutzt relative Adressen bzw. Hash-Routing.
+- Optional: `VITE_FAMILIE_URL` enthält die Adresse der Startseite, z. B. für einen Knopf „← Familie Ulfert“.
+
+Symbole für die Kacheln stehen in [`src/icons.ts`](src/icons.ts).
+
+## Entwicklung
+
+Voraussetzung: Node.js ab Version 20.
+
+```bash
+npm install
+npm run dev        # Startseite lokal
+npm test           # prüft apps.json
+npm run build:all  # Startseite + alle Apps nach dist/
+# eine lokale Kopie statt Klonen verwenden:
+APPS_LOCAL=kochbuch=../Kochbuch npm run build:all
+```
+
+Die Icons werden aus `public/icons/icon.svg` erzeugt: `npm run icons` (braucht Playwright).
