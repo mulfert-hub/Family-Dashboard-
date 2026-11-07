@@ -1,10 +1,12 @@
 # Familie Ulfert
 
-Die gemeinsame App der Familie, aufgebaut wie ein kleiner App Store, mit **einem** Icon auf dem Home-Bildschirm:
+Die gemeinsame App der Familie, mit **einem** Icon auf dem Home-Bildschirm und drei Reitern:
 
-- **Start:** unsere Apps als Symbole, ein Tipp öffnet sie.
-- **Entdecken:** alle Apps mit Highlight, Listen und Detailseiten (Beschreibung, Funktionen, Bildschirmfotos).
-  „Laden“ legt eine App auf den Startbildschirm, auf der Detailseite lässt sie sich wieder entfernen.
+- **Übersicht** (Startseite): ein Dashboard aus Karten, derzeit die Woche mit Kalenderwoche, unsere Apps
+  und was demnächst kommt. Neue Karten kommen nach und nach dazu (siehe unten).
+- **Apps:** unsere Apps als Symbole, ein Tipp öffnet sie.
+- **Entdecken:** alle Apps wie in einem App Store, mit Highlight, Listen und Detailseiten (Beschreibung, Funktionen,
+  Bildschirmfotos). „Laden“ legt eine App zu „Apps“, auf der Detailseite lässt sie sich wieder entfernen.
   Das merkt sich jedes Handy für sich.
 
 Derzeit:
@@ -82,6 +84,12 @@ Voraussetzungen an die App (das Kochbuch erfüllt sie bereits):
 - Optional: `VITE_FAMILIE_URL` enthält die Adresse der Startseite, z. B. für einen Knopf „← Familie Ulfert“.
 
 Symbole für die Kacheln stehen in [`src/icons.ts`](src/icons.ts).
+
+## Eine Karte zur Übersicht hinzufügen
+
+Die Karten stehen in [`src/dashboard.ts`](src/dashboard.ts). Jede Karte ist ein Objekt mit `id` und einer
+Funktion `render`, die HTML liefert oder `null`, wenn sie gerade nichts zu zeigen hat. Die Reihenfolge in `WIDGETS`
+ist die Reihenfolge auf der Seite. `breite: 'breit'` nimmt auf großen Bildschirmen die ganze Zeile ein.
 
 ## Entwicklung
 

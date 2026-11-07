@@ -1,7 +1,8 @@
 // Ansichten als HTML-Bausteine: Startbildschirm, Entdecken (Store) und App-Detailseite.
-import { APPS, formatDate, greeting, type FamilyApp } from './apps';
+import { APPS, formatDate, type FamilyApp } from './apps';
 import { homeApps, isOnHome } from './home';
 import { icon } from './icons';
+import type { Tab } from './router';
 
 export const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -20,15 +21,14 @@ export function actionButton(app: FamilyApp, big = false): string {
 
 const detailHref = (app: FamilyApp) => `#/app/${encodeURIComponent(app.id)}`;
 
-// ---------- Startbildschirm ----------
-export function startView(now = new Date()): string {
+// ---------- Apps (Startbildschirm mit Symbolen) ----------
+export function appsView(): string {
   const apps = homeApps(APPS);
   const soon = APPS.filter((a) => a.status !== 'live');
   return `
     <header class="large-head">
-      <p class="eyebrow">${esc(formatDate(now))}</p>
-      <h1>${esc(greeting(now))}</h1>
-      <p class="family">Familie Ulfert</p>
+      <p class="eyebrow">Familie Ulfert</p>
+      <h1>Apps</h1>
     </header>
     ${
       apps.length
@@ -40,7 +40,7 @@ export function startView(now = new Date()): string {
               .join('')}
           </ul>`
         : `<div class="empty">
-            <p>Noch keine Apps auf dem Startbildschirm.</p>
+            <p>Noch keine Apps hier.</p>
             <a class="pill pill-big" href="#/entdecken">Apps entdecken</a>
           </div>`
     }
@@ -163,8 +163,8 @@ export function notFoundView(): string {
     <div class="empty"><p>Diese App gibt es (noch) nicht.</p></div>`;
 }
 
-export function tabBar(active: 'start' | 'entdecken'): string {
-  const tab = (id: 'start' | 'entdecken', label: string, href: string) =>
+export function tabBar(active: Tab | null): string {
+  const tab = (id: Tab, label: string, href: string) =>
     `<a class="tab${active === id ? ' is-active' : ''}" href="${href}"${active === id ? ' aria-current="page"' : ''}>${icon(id)}<span>${label}</span></a>`;
-  return `<nav class="tab-bar" aria-label="Bereiche">${tab('start', 'Start', '#/')}${tab('entdecken', 'Entdecken', '#/entdecken')}</nav>`;
+  return `<nav class="tab-bar" aria-label="Bereiche">${tab('start', 'Übersicht', '#/')}${tab('apps', 'Apps', '#/apps')}${tab('entdecken', 'Entdecken', '#/entdecken')}</nav>`;
 }

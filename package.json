@@ -9,7 +9,7 @@
     "build:apps": "node scripts/build-apps.mjs",
     "build:all": "npm run build && npm run build:apps",
     "preview": "vite preview --host",
-    "test": "vitest run",
+    "test": "vitest run --dir tests",
     "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
