@@ -1,4 +1,4 @@
-// App-Verzeichnis der Familie: liest apps.json und bereitet die Einträge für die Startseite auf.
+// App-Verzeichnis der Familie: liest apps.json und bereitet die Einträge für Store und Startbildschirm auf.
 import data from '../apps.json';
 
 export type AppStatus = 'live' | 'bald';
@@ -6,10 +6,15 @@ export type AppStatus = 'live' | 'bald';
 export interface FamilyApp {
   id: string;
   name: string;
+  untertitel: string;
   beschreibung: string;
+  funktionen: string[];
+  kategorie: string;
   icon: string;
   farbe: string;
   status: AppStatus;
+  highlight: boolean;
+  screenshots: string[];
   /** Pfad relativ zur Startseite, z. B. "kochbuch/" (nur bei status "live") */
   path?: string;
   /** Eigenes Repository, aus dem die App beim Veröffentlichen gebaut wird */
@@ -17,13 +22,16 @@ export interface FamilyApp {
   branch?: string;
 }
 
+const strings = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+
 export function parseApps(raw: unknown): FamilyApp[] {
   const list = (raw as { apps?: unknown })?.apps;
   if (!Array.isArray(list)) throw new Error('apps.json: Feld "apps" fehlt');
   const ids = new Set<string>();
   return list.map((a, i) => {
-    const app = a as Partial<FamilyApp>;
+    const app = a as Partial<FamilyApp> & { highlight?: unknown };
     if (!app.id || !app.name) throw new Error(`apps.json: Eintrag ${i + 1} braucht "id" und "name"`);
+    if (!/^[a-z0-9-]+$/.test(app.id)) throw new Error(`apps.json: id "${app.id}" darf nur a–z, 0–9 und - enthalten`);
     if (ids.has(app.id)) throw new Error(`apps.json: "${app.id}" kommt doppelt vor`);
     ids.add(app.id);
     if (app.status !== 'live' && app.status !== 'bald') throw new Error(`apps.json: "${app.id}" hat einen unbekannten Status`);
@@ -32,10 +40,15 @@ export function parseApps(raw: unknown): FamilyApp[] {
     return {
       id: app.id,
       name: app.name,
+      untertitel: app.untertitel ?? '',
       beschreibung: app.beschreibung ?? '',
+      funktionen: strings(app.funktionen),
+      kategorie: app.kategorie ?? 'Familie',
       icon: app.icon ?? app.id,
       farbe: app.farbe ?? '#8c847b',
       status: app.status,
+      highlight: app.highlight === true,
+      screenshots: strings(app.screenshots),
       path: app.path,
       repo: app.repo,
       branch: app.branch,
@@ -44,6 +57,8 @@ export function parseApps(raw: unknown): FamilyApp[] {
 }
 
 export const APPS: FamilyApp[] = parseApps(data);
+
+export const findApp = (id: string) => APPS.find((a) => a.id === id);
 
 /** Begrüßung passend zur Tageszeit */
 export function greeting(date: Date = new Date()): string {

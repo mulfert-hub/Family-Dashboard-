@@ -21,7 +21,7 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: ['icons/*.png', 'icons/*.svg'],
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg,woff2,webmanifest}'],
         globIgnores: appPaths.map((p) => `${p}**`),
         navigateFallback: 'index.html',
         navigateFallbackDenylist: appPaths.map((p) => new RegExp(`/${escapeRe(p)}`)),
