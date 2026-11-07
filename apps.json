@@ -1,13 +1,30 @@
 {
-  "$kommentar": "Alle Apps der Familie. status: \"live\" = verlinkt, \"bald\" = Platzhalter. Apps mit \"repo\" werden beim Veröffentlichen aus ihrem eigenen Repository gebaut und unter \"path\" mitveröffentlicht.",
+  "$kommentar": "Alle Apps der Familie, so wie sie im Familien-App-Store erscheinen. status: \"live\" = installierbar, \"bald\" = in Arbeit. Apps mit \"repo\" werden beim Veröffentlichen aus ihrem eigenen Repository gebaut und unter \"path\" mitveröffentlicht. \"highlight\": true zeigt die App groß oben in „Entdecken“.",
   "apps": [
     {
       "id": "kochbuch",
       "name": "Kochbuch",
-      "beschreibung": "Rezepte, Kochmodus und Einkaufsliste",
+      "untertitel": "Rezepte, Kochmodus und Einkaufsliste",
+      "beschreibung": "Unser gemeinsames Kochbuch zum Durchblättern. Screenshots oder Links von Rezepten einlesen, Claude macht daraus eine schöne Rezeptseite. Beim Kochen führt der Kochmodus Schritt für Schritt, mit Timern und Sprachsteuerung. Die Einkaufsliste fasst Zutaten zusammen und sortiert sie nach Supermarkt-Abteilungen.",
+      "funktionen": [
+        "Rezepte aus Screenshots, Fotos oder Links",
+        "Kochmodus mit Timern und Sprachsteuerung",
+        "„Was koche ich heute?“ mit Vorschlägen",
+        "Einkaufsliste nach Abteilungen sortiert",
+        "Synchronisation zwischen unseren Handys"
+      ],
+      "kategorie": "Essen",
       "icon": "kochbuch",
       "farbe": "#e4573d",
       "status": "live",
+      "highlight": true,
+      "screenshots": [
+        "screenshots/kochbuch-1.jpg",
+        "screenshots/kochbuch-2.jpg",
+        "screenshots/kochbuch-3.jpg",
+        "screenshots/kochbuch-4.jpg",
+        "screenshots/kochbuch-5.jpg"
+      ],
       "path": "kochbuch/",
       "repo": "mulfert-hub/Kochbuch",
       "branch": "main"
@@ -15,7 +32,14 @@
     {
       "id": "haushalt",
       "name": "Haushalt",
-      "beschreibung": "Putzplan: wiederkehrende Aufgaben abhaken, mit Erinnerung",
+      "untertitel": "Putzplan mit Erinnerung",
+      "beschreibung": "Unser Putzplan: wiederkehrende Aufgaben im Haushalt abhaken. Die App erinnert, wenn etwas fällig ist.",
+      "funktionen": [
+        "Wiederkehrende Aufgaben",
+        "Abhaken, wenn erledigt",
+        "Erinnerung per Mitteilung"
+      ],
+      "kategorie": "Zuhause",
       "icon": "haushalt",
       "farbe": "#3f8fb0",
       "status": "live",
@@ -26,7 +50,10 @@
     {
       "id": "aufgaben",
       "name": "Aufgaben & Taschengeld",
-      "beschreibung": "Für unsere Tochter: Aufgaben abhaken, Taschengeld im Blick",
+      "untertitel": "Aufgaben abhaken, Taschengeld im Blick",
+      "beschreibung": "Für unsere Tochter: erledigte Aufgaben abhaken und sehen, wie das Taschengeld wächst.",
+      "funktionen": [],
+      "kategorie": "Kinder",
       "icon": "aufgaben",
       "farbe": "#e0a21b",
       "status": "bald"

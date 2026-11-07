@@ -1,7 +1,13 @@
 # Familie Ulfert
 
-Die gemeinsame App der Familie: eine Startseite, von der aus alle unsere privaten Apps erreichbar sind,
-mit **einem** Icon auf dem Home-Bildschirm. Derzeit:
+Die gemeinsame App der Familie, aufgebaut wie ein kleiner App Store, mit **einem** Icon auf dem Home-Bildschirm:
+
+- **Start:** unsere Apps als Symbole, ein Tipp öffnet sie.
+- **Entdecken:** alle Apps mit Highlight, Listen und Detailseiten (Beschreibung, Funktionen, Bildschirmfotos).
+  „Laden“ legt eine App auf den Startbildschirm, auf der Detailseite lässt sie sich wieder entfernen.
+  Das merkt sich jedes Handy für sich.
+
+Derzeit:
 
 | App | Status |
 | --- | --- |
@@ -50,15 +56,23 @@ In [`apps.json`](apps.json) einen Eintrag ergänzen oder einen Platzhalter auf `
 {
   "id": "haushalt",
   "name": "Haushalt",
-  "beschreibung": "Alles rund ums Zuhause",
+  "untertitel": "Alles rund ums Zuhause",
+  "beschreibung": "Längerer Text für die Detailseite.",
+  "funktionen": ["Putzplan", "Vorräte"],
+  "kategorie": "Zuhause",
   "icon": "haushalt",
   "farbe": "#3f8fb0",
   "status": "live",
+  "highlight": false,
+  "screenshots": ["screenshots/haushalt-1.jpg"],
   "path": "haushalt/",
   "repo": "mulfert-hub/Haushalt",
   "branch": "main"
 }
 ```
+
+Bildschirmfotos kommen nach `public/screenshots/` (Hochformat, etwa 540 × 1168 Pixel, JPG).
+`"highlight": true` zeigt die App groß oben in „Entdecken“.
 
 Voraussetzungen an die App (das Kochbuch erfüllt sie bereits):
 

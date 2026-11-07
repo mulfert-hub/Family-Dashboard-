@@ -23,7 +23,7 @@ export default defineConfig({
       workbox: {
         // Zeigt Push-Mitteilungen aller Apps der Familie an (public/familie-push.js)
         importScripts: ['familie-push.js'],
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg,woff2,webmanifest}'],
         globIgnores: appPaths.map((p) => `${p}**`),
         navigateFallback: 'index.html',
         navigateFallbackDenylist: appPaths.map((p) => new RegExp(`/${escapeRe(p)}`)),
