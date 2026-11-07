@@ -12,7 +12,7 @@ Derzeit:
 | App | Status |
 | --- | --- |
 | 🍳 [Kochbuch](https://github.com/mulfert-hub/Kochbuch) | live, unter `…/Family-Dashboard-/kochbuch/` |
-| 🏠 Haushalt | in Arbeit |
+| 🏠 [Haushalt](https://github.com/mulfert-hub/Haushaltsapp) | live, unter `…/Family-Dashboard-/haushalt/` |
 | ✅ Aufgaben & Taschengeld (für unsere Tochter) | in Arbeit |
 
 Adresse nach dem Veröffentlichen: **https://mulfert-hub.github.io/Family-Dashboard-/**
@@ -26,6 +26,10 @@ Adresse nach dem Veröffentlichen: **https://mulfert-hub.github.io/Family-Dashbo
   installierten „Familie Ulfert“-App heraus im Vollbild und nicht in einem Browserfenster.
 - Jede App hat weiterhin ihren eigenen Service Worker (offline). Der Service Worker der Startseite lässt die
   Unterordner der Apps bewusst in Ruhe.
+- **Mitteilungen:** Auf dem iPhone weckt iOS bei einer Push-Nachricht nur den Service Worker der installierten
+  App, also den der Startseite. Er bindet deshalb [`public/familie-push.js`](public/familie-push.js) ein und zeigt die
+  Mitteilungen aller Apps an. Eine App prüft per Nachricht `familie-push-ping`, ob das möglich ist, und meldet ihr
+  Push-Abo dann über diesen Service Worker an (so macht es der Haushaltsplan).
 - **Daten:** Jede App auf dem Home-Bildschirm hat ihren eigenen Speicher. Auf dem iPhone gilt das auch, wenn zwei
   Apps dieselbe Adresse haben. Das Kochbuch in „Familie Ulfert“ beginnt deshalb mit leerem Speicher:
   1. **Mehr → Rezepterkennung mit Claude:** den API-Schlüssel noch einmal eintragen.

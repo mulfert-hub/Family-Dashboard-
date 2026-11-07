@@ -32,13 +32,20 @@
     {
       "id": "haushalt",
       "name": "Haushalt",
-      "untertitel": "Alles rund ums Zuhause",
-      "beschreibung": "Ordnung für den Familienalltag. Was genau hineinkommt, legen wir gemeinsam fest.",
-      "funktionen": [],
+      "untertitel": "Putzplan mit Erinnerung",
+      "beschreibung": "Unser Putzplan: wiederkehrende Aufgaben im Haushalt abhaken. Die App erinnert, wenn etwas fällig ist.",
+      "funktionen": [
+        "Wiederkehrende Aufgaben",
+        "Abhaken, wenn erledigt",
+        "Erinnerung per Mitteilung"
+      ],
       "kategorie": "Zuhause",
       "icon": "haushalt",
       "farbe": "#3f8fb0",
-      "status": "bald"
+      "status": "live",
+      "path": "haushalt/",
+      "repo": "mulfert-hub/Haushaltsapp",
+      "branch": "main"
     },
     {
       "id": "aufgaben",

@@ -11,6 +11,13 @@ describe('apps.json', () => {
     expect(kochbuch?.screenshots.length).toBeGreaterThan(0);
   });
 
+  it('enthält den Haushaltsplan', () => {
+    const haushalt = APPS.find((a) => a.id === 'haushalt');
+    expect(haushalt?.status).toBe('live');
+    expect(haushalt?.path).toBe('haushalt/');
+    expect(haushalt?.repo).toBe('mulfert-hub/Haushaltsapp');
+  });
+
   it('meldet fehlerhafte Einträge', () => {
     expect(() => parseApps({})).toThrow();
     expect(() => parseApps({ apps: [{ id: 'x', name: 'X', status: 'live' }] })).toThrow(/path/);
