@@ -7,9 +7,12 @@ import { isoWeek, sameDay, weekDays } from './dates';
 import { homeApps } from './home';
 import { icon } from './icons';
 import { appIcon, esc } from './views';
+import { openItems, upcomingDays, type KochbuchData } from './kochbuch';
 
 export interface WidgetContext {
   now: Date;
+  /** Wochenplan und Einkaufsliste aus dem Kochbuch (null: auf diesem Gerät noch keine Daten) */
+  kochbuch: KochbuchData | null;
 }
 
 export interface Widget {
@@ -43,6 +46,52 @@ const woche: Widget = {
       })
       .join('');
     return card(this, 'Diese Woche', `<ol class="week">${days}</ol>`, `<span class="widget-meta">KW ${isoWeek(now)}</span>`);
+  },
+};
+
+// ---------- Aus dem Kochbuch: Essen und Einkaufsliste ----------
+/** Pfad des Kochbuchs, wenn es bei „Apps“ liegt */
+const kochbuchPath = () => homeApps(APPS).find((a) => a.id === 'kochbuch')?.path ?? null;
+const MAX_ITEMS = 6;
+
+const essen: Widget = {
+  id: 'essen',
+  render({ now, kochbuch }) {
+    const path = kochbuchPath();
+    if (!path || !kochbuch) return null;
+    const rows = upcomingDays(kochbuch.plan, now)
+      .map(
+        (d) => `<li class="plan-row${d.label === 'Heute' ? ' is-today' : ''}">
+          <span class="plan-label">${esc(d.label)}</span>
+          <span class="plan-meals">${
+            d.meals.length
+              ? d.meals
+                  .map((m) => `<a class="meal" href="${esc(path)}#/rezepte/${encodeURIComponent(m.recipeId)}">${esc(m.title || 'Ohne Titel')}</a>`)
+                  .join('')
+              : `<a class="meal is-empty" href="${esc(path)}#/wochenplan">Noch nichts geplant</a>`
+          }</span>
+        </li>`,
+      )
+      .join('');
+    return card(this, 'Essen', `<ul class="plan-list">${rows}</ul>`, `<a class="widget-link" href="${esc(path)}#/wochenplan">Wochenplan</a>`);
+  },
+};
+
+const einkauf: Widget = {
+  id: 'einkauf',
+  render({ kochbuch }) {
+    const path = kochbuchPath();
+    if (!path || !kochbuch) return null;
+    const open = openItems(kochbuch.shopping);
+    const body = open.length
+      ? `<ul class="shop-list">${open
+          .slice(0, MAX_ITEMS)
+          .map((i) => `<li><span class="shop-dot" aria-hidden="true"></span>${esc(i.name)}</li>`)
+          .join('')}</ul>${
+          open.length > MAX_ITEMS ? `<a class="shop-more" href="${esc(path)}#/einkauf">und ${open.length - MAX_ITEMS} weitere</a>` : ''
+        }`
+      : `<p class="shop-empty">Nichts offen – alles eingekauft.</p>`;
+    return card(this, 'Einkaufsliste', body, `<a class="widget-link" href="${esc(path)}#/einkauf">${open.length ? `${open.length} offen` : 'Öffnen'}</a>`);
   },
 };
 
@@ -81,15 +130,15 @@ const mehr: Widget = {
   breite: 'breit',
   render() {
     return `<section class="widget widget-hint is-wide">
-      <p><strong>Hier kommt mit der Zeit mehr dazu,</strong> zum Beispiel Termine, die Einkaufsliste oder fällige Aufgaben aus unseren Apps.</p>
+      <p><strong>Hier kommt mit der Zeit mehr dazu,</strong> zum Beispiel Termine oder fällige Aufgaben aus unseren Apps.</p>
     </section>`;
   },
 };
 
-export const WIDGETS: Widget[] = [woche, schnellzugriff, demnaechst, mehr];
+export const WIDGETS: Widget[] = [woche, essen, einkauf, schnellzugriff, demnaechst, mehr];
 
-export function dashboardView(now = new Date()): string {
-  const ctx: WidgetContext = { now };
+export function dashboardView(now = new Date(), kochbuch: KochbuchData | null = null): string {
+  const ctx: WidgetContext = { now, kochbuch };
   const cards = WIDGETS.map((w) => {
     try {
       return w.render(ctx);

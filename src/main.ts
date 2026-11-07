@@ -8,17 +8,21 @@ import { setOnHome } from './home';
 import { parseRoute, type Tab } from './router';
 import { initUpdates } from './update';
 import { dashboardView } from './dashboard';
+import { readKochbuch, type KochbuchData } from './kochbuch';
 import { appsView, detailView, esc, notFoundView, storeView, tabBar } from './views';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
 let lastKey = '';
+// Wochenplan und Einkaufsliste aus dem Kochbuch (wird nach dem ersten Zeichnen nachgeladen)
+let kochbuch: KochbuchData | null = null;
+let kochbuchJson = 'null';
 
 function render(): void {
   const route = parseRoute(location.hash);
   let body: string;
   let tab: Tab = 'entdecken';
   if (route.name === 'start') {
-    body = dashboardView();
+    body = dashboardView(new Date(), kochbuch);
     tab = 'start';
   } else if (route.name === 'apps') {
     body = appsView();
@@ -64,11 +68,32 @@ root.addEventListener('click', (e) => {
   }
 });
 
-window.addEventListener('hashchange', go);
-// Datum und Begrüßung aktuell halten, wenn die App aus dem Hintergrund zurückkommt
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') render();
+/** Kochbuch-Daten neu lesen und nur bei Änderungen neu zeichnen */
+async function refreshKochbuch(): Promise<void> {
+  const data = await readKochbuch();
+  const json = JSON.stringify(data);
+  if (json === kochbuchJson) return;
+  kochbuch = data;
+  kochbuchJson = json;
+  if (parseRoute(location.hash).name === 'start') render();
+}
+
+window.addEventListener('hashchange', () => {
+  go();
+  void refreshKochbuch();
 });
+// Datum, Begrüßung, Essen und Einkaufsliste aktuell halten, wenn die App aus dem Hintergrund zurückkommt
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    render();
+    void refreshKochbuch();
+  }
+});
+// Das Kochbuch gleicht im Hintergrund mit dem anderen Handy ab – ab und zu nachsehen
+window.setInterval(() => {
+  if (document.visibilityState === 'visible' && parseRoute(location.hash).name === 'start') void refreshKochbuch();
+}, 20_000);
 
 render();
+void refreshKochbuch();
 initUpdates();
