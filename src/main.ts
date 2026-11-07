@@ -5,9 +5,10 @@ import '@fontsource/instrument-sans/700.css';
 import './styles.css';
 import { findApp } from './apps';
 import { setOnHome } from './home';
-import { parseRoute } from './router';
+import { parseRoute, type Tab } from './router';
 import { initUpdates } from './update';
-import { detailView, esc, notFoundView, startView, storeView, tabBar } from './views';
+import { dashboardView } from './dashboard';
+import { appsView, detailView, esc, notFoundView, storeView, tabBar } from './views';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
 let lastKey = '';
@@ -15,10 +16,13 @@ let lastKey = '';
 function render(): void {
   const route = parseRoute(location.hash);
   let body: string;
-  let tab: 'start' | 'entdecken' = 'entdecken';
+  let tab: Tab = 'entdecken';
   if (route.name === 'start') {
-    body = startView();
+    body = dashboardView();
     tab = 'start';
+  } else if (route.name === 'apps') {
+    body = appsView();
+    tab = 'apps';
   } else if (route.name === 'entdecken') {
     body = storeView();
   } else {

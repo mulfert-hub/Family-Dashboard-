@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { APPS, greeting, parseApps } from '../src/apps';
 import { homeApps } from '../src/home';
 import { parseRoute } from '../src/router';
+import { isoWeek, weekDays } from '../src/dates';
 
 describe('apps.json', () => {
   it('ist gültig und enthält das Kochbuch', () => {
@@ -52,9 +53,10 @@ describe('Startbildschirm', () => {
 });
 
 describe('Routen', () => {
-  it('erkennt Start, Entdecken und App-Seiten', () => {
+  it('erkennt Übersicht, Apps, Entdecken und App-Seiten', () => {
     expect(parseRoute('')).toEqual({ name: 'start' });
     expect(parseRoute('#/')).toEqual({ name: 'start' });
+    expect(parseRoute('#/apps')).toEqual({ name: 'apps' });
     expect(parseRoute('#/entdecken')).toEqual({ name: 'entdecken' });
     expect(parseRoute('#/app/kochbuch')).toEqual({ name: 'app', id: 'kochbuch' });
   });
@@ -66,5 +68,20 @@ describe('Begrüßung', () => {
     expect(greeting(new Date(2026, 0, 1, 14))).toBe('Hallo');
     expect(greeting(new Date(2026, 0, 1, 20))).toBe('Guten Abend');
     expect(greeting(new Date(2026, 0, 1, 23))).toBe('Gute Nacht');
+  });
+});
+
+describe('Datum', () => {
+  it('berechnet die Kalenderwoche nach ISO', () => {
+    expect(isoWeek(new Date(2026, 10, 7))).toBe(45);
+    expect(isoWeek(new Date(2026, 0, 1))).toBe(1);
+    expect(isoWeek(new Date(2027, 0, 1))).toBe(53);
+  });
+  it('liefert die Woche von Montag bis Sonntag', () => {
+    const days = weekDays(new Date(2026, 10, 7)); // Samstag
+    expect(days).toHaveLength(7);
+    expect(days[0].getDay()).toBe(1);
+    expect(days[0].getDate()).toBe(2);
+    expect(days[6].getDate()).toBe(8);
   });
 });
