@@ -49,95 +49,70 @@ body {
 }
 
 /* ---------- Der Museumsraum ---------- */
-/* Wie ein Foto aus der Galerie: helle Wand mit weichem Licht von oben, an den Rändern
-   dunkler, darunter Sockelleiste und glänzendes Parkett. Wand und Boden stehen,
-   die Werke gleiten beim Wischen vorbei – wie beim Gang durch den Saal. */
+/* Wie das Galerie-Foto: dunkle schieferblaue Wand, ein Strahler von oben setzt das Bild
+   ins Licht, die Ränder versinken im Dunkel. Darunter eine dunkle Fußleiste und helles
+   Eichenparkett im Flechtmuster. Der Raum bleibt auch im hellen Modus abends-dunkel.
+   Wand und Boden stehen, die Werke gleiten beim Wischen vorbei. */
 .museum {
-  --raum-h: clamp(440px, calc(100dvh - var(--safe-t) - var(--safe-b) - 230px), 780px);
-  --boden-h: 20%;
-  --wand: #e8e4dc;
-  --wand-licht: #f8f5ef;
-  --wand-rand: #b9b2a5;
-  --sockel: #f4f1ea;
-  --parkett-1: #8a5b33;
-  --parkett-2: #774c29;
-  --parkett-glanz: rgba(255, 235, 200, 0.35);
+  --raum-h: clamp(460px, calc(100dvh - var(--safe-t) - var(--safe-b) - 230px), 800px);
+  --boden-h: 19%;
+  --wand: #34334a;
+  --wand-licht: #6a6880;
+  --wand-dunkel: #101019;
   position: relative;
   height: var(--raum-h);
   margin: 0 calc(-1 * var(--gutter));
   overflow: hidden;
   background:
-    radial-gradient(ellipse 130% 95% at 50% 30%, transparent 45%, color-mix(in srgb, var(--wand-rand) 70%, transparent) 100%),
-    linear-gradient(180deg, color-mix(in srgb, var(--wand) 88%, #000) 0%, var(--wand) 18%, var(--wand) 70%, color-mix(in srgb, var(--wand) 90%, #000) 80%);
+    radial-gradient(ellipse 120% 90% at 50% 38%, transparent 40%, rgba(8, 8, 14, 0.75) 100%),
+    linear-gradient(180deg, var(--wand-dunkel) 0%, var(--wand) 30%, #393548 78%);
   isolation: isolate;
+  color-scheme: dark;
 }
 @media (min-width: 720px) {
   .museum {
     margin: 0;
     border-radius: 18px;
-    box-shadow: 0 18px 40px -22px rgba(40, 25, 10, 0.6);
+    box-shadow: 0 18px 40px -22px rgba(10, 10, 20, 0.8);
   }
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .museum {
-    --wand: #3a3733;
-    --wand-licht: #6b6255;
-    --wand-rand: #0c0c0b;
-    --sockel: #4a4640;
-    --parkett-1: #4a311c;
-    --parkett-2: #3c2716;
-    --parkett-glanz: rgba(255, 220, 170, 0.18);
-  }
-}
-:root[data-theme='dark'] .museum {
-  --wand: #3a3733;
-  --wand-licht: #6b6255;
-  --wand-rand: #0c0c0b;
-  --sockel: #4a4640;
-  --parkett-1: #4a311c;
-  --parkett-2: #3c2716;
-  --parkett-glanz: rgba(255, 220, 170, 0.18);
 }
 
-/* Die Decke ist nicht im Bild – nur ein Hauch Schatten oben */
+/* Oben nur Dunkel – die Decke ist nicht im Bild */
 .decke {
   position: absolute;
   inset: 0 0 auto;
   z-index: 0;
-  height: 40px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent);
+  height: 60px;
+  background: linear-gradient(180deg, rgba(5, 5, 10, 0.6), transparent);
 }
 
-/* Glänzendes Parkett in leichter Perspektive, darüber die Sockelleiste */
+/* Helles Eichenparkett im Flechtmuster, leicht perspektivisch; darüber die dunkle Fußleiste */
 .boden {
   position: absolute;
   inset: auto 0 0;
   z-index: 0;
   height: var(--boden-h);
   overflow: hidden;
-  perspective: 420px;
+  perspective: 380px;
   perspective-origin: 50% 0;
 }
 .boden::before {
   content: '';
   position: absolute;
-  inset: 0 -40% -60%;
-  background:
-    radial-gradient(ellipse 22% 55% at 50% 0%, var(--parkett-glanz), transparent 80%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 30%, rgba(0, 0, 0, 0.2)),
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 38px),
-    repeating-linear-gradient(90deg, var(--parkett-1) 0 38px, var(--parkett-2) 38px 76px);
-  transform: rotateX(62deg);
+  inset: 0 -50% -70%;
+  background: linear-gradient(rgba(178, 160, 132, 0.4), rgba(178, 160, 132, 0.4)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='96' height='96' fill='%23b4a184'/%3E%3Cg fill='%23bfad8f'%3E%3Crect x='0' y='0' width='12' height='48'/%3E%3Crect x='24' y='0' width='12' height='48'/%3E%3Crect x='48' y='48' width='12' height='48'/%3E%3Crect x='72' y='48' width='12' height='48'/%3E%3Crect x='48' y='0' width='48' height='12'/%3E%3Crect x='48' y='24' width='48' height='12'/%3E%3Crect x='0' y='48' width='48' height='12'/%3E%3Crect x='0' y='72' width='48' height='12'/%3E%3C/g%3E%3Cg stroke='%23857357' stroke-opacity='.55' stroke-width='1' fill='none'%3E%3Cpath d='M12 0v48M24 0v48M36 0v48M60 48v48M72 48v48M84 48v48M48 12h48M48 24h48M48 36h48M0 60h48M0 72h48M0 84h48'/%3E%3Cpath stroke-opacity='.9' d='M0 0h96M0 48h96M0 0v96M48 0v96'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 64px 64px;
+  transform: rotateX(64deg);
   transform-origin: 50% 0;
 }
 .boden::after {
-  /* Sockelleiste */
+  /* Licht von vorn in der Mitte, dunkle Ränder, Schatten unter der Leiste – und die Fußleiste selbst */
   content: '';
   position: absolute;
-  inset: 0 0 auto;
-  height: 10px;
-  background: linear-gradient(180deg, var(--sockel), color-mix(in srgb, var(--sockel) 78%, #000));
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  inset: 0;
+  background:
+    linear-gradient(180deg, #5a4535 0, #4a382b 6px, #2f241b 11px, rgba(0, 0, 0, 0.45) 12px, rgba(0, 0, 0, 0.12) 30px, transparent 55%),
+    radial-gradient(ellipse 75% 120% at 50% 100%, transparent 30%, rgba(10, 8, 6, 0.55) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 220, 180, 0.25);
 }
 
 /* Die Spur mit allen Wandstücken – waagerecht wischen, je ein Werk rastet ein */
@@ -182,7 +157,7 @@ body {
   }
 }
 
-/* Licht von oben: ein heller Lichtfleck auf der Wand über und um das Bild */
+/* Der Strahler von oben: heller Lichtkegel um das Bild, nach außen weich ins Dunkel */
 .spot {
   position: absolute;
   top: 0;
@@ -194,12 +169,12 @@ body {
 .spot::after {
   content: '';
   position: absolute;
-  top: -10px;
+  top: -20px;
   left: 50%;
-  width: min(150vw, 620px);
-  height: calc(var(--raum-h) * 0.95);
+  width: min(170vw, 700px);
+  height: calc(var(--raum-h) * 0.85);
   transform: translateX(-50%);
-  background: radial-gradient(ellipse 42% 58% at 50% 20%, var(--wand-licht), color-mix(in srgb, var(--wand-licht) 45%, transparent) 50%, transparent 75%);
+  background: radial-gradient(ellipse 40% 50% at 50% 42%, rgba(150, 148, 175, 0.55), rgba(110, 108, 140, 0.22) 55%, transparent 78%);
   pointer-events: none;
   z-index: -1;
 }
@@ -220,7 +195,16 @@ body {
 .wandstueck .passepartout img {
   width: auto;
   max-width: 100%;
-  max-height: calc(var(--raum-h) * 0.4);
+  max-height: calc(var(--raum-h) * 0.46);
+}
+/* Im Museum hängt alles gerade und ohne sichtbaren Draht */
+.wandstueck .aufhaengung {
+  padding-top: 0;
+  transform: none;
+}
+.wandstueck .draht,
+.wandstueck .nagel {
+  display: none;
 }
 .wandstueck .leer-bild {
   width: min(46vw, 200px);
@@ -246,9 +230,9 @@ body {
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--surface) 78%, transparent);
-  color: var(--ink);
-  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  color: #f1eff6;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   cursor: pointer;
@@ -410,33 +394,47 @@ body {
     0 14px 22px -10px rgba(40, 25, 10, 0.6),
     0 2px 4px rgba(0, 0, 0, 0.25);
 }
-/* Der schwere Goldrahmen der Ausstellung: Profil mit Hohlkehle, Perlstab und Patina */
-.rahmen-prunk {
-  --rb: clamp(14px, 4.2vw, 22px);
+/* Der Rahmen aus dem Galerie-Foto: helles, gekälktes Holz mit Profil, das Bild ohne Passepartout,
+   dazu ein tiefer Schatten nach unten auf die Wand */
+.rahmen-galerie {
+  --rb: clamp(14px, 4.4vw, 22px);
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(255, 245, 200, 0.55), transparent 55%),
-    linear-gradient(135deg, #6f4a10, #e9c868 18%, #a87a22 34%, #f7e09a 50%, #9c6f1d 68%, #e2bd5c 84%, #6a460f);
+    linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 12%, transparent 88%, rgba(0, 0, 0, 0.25)),
+    repeating-linear-gradient(0deg, rgba(90, 70, 45, 0.08) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, #d9c6a2, #b49c76 40%, #9c8461 75%, #b8a27c);
   box-shadow:
-    inset 0 0 0 1px rgba(60, 35, 5, 0.7),
-    inset 0 0 0 3px rgba(255, 236, 170, 0.75),
-    inset 0 0 0 5px rgba(120, 80, 15, 0.6),
-    inset 0 0 0 calc(var(--rb) - 6px) rgba(0, 0, 0, 0),
-    inset 0 0 calc(var(--rb) * 0.6) rgba(70, 40, 5, 0.55),
-    0 22px 30px -14px rgba(25, 15, 5, 0.65),
-    0 3px 6px rgba(0, 0, 0, 0.3);
+    inset 0 0 0 1px rgba(255, 245, 220, 0.55),
+    inset 0 0 0 3px rgba(110, 88, 60, 0.55),
+    inset 0 0 0 4px rgba(240, 225, 195, 0.6),
+    0 34px 30px -14px rgba(5, 5, 12, 0.85),
+    0 12px 40px 6px rgba(5, 5, 12, 0.55);
 }
-.rahmen-prunk::before {
-  /* innere Zierleiste (Perlstab) direkt am Passepartout */
+.rahmen-galerie::before {
+  /* innere Abstufung (Falz) direkt am Bild */
   content: '';
   position: absolute;
-  inset: calc(var(--rb) - 4px);
-  border: 2px dotted rgba(255, 238, 180, 0.9);
-  outline: 1px solid rgba(80, 50, 10, 0.7);
+  inset: calc(var(--rb) - 5px);
+  border: 5px solid transparent;
+  border-color: #8a7354 #c9b48f #d6c29d #a38a66;
   pointer-events: none;
 }
-.rahmen-prunk .passepartout {
-  padding: 8%;
-  background: #f6f2e8;
+.rahmen-galerie .passepartout {
+  position: relative;
+  padding: 0;
+  background: #f2f0ee;
+  box-shadow: none;
+}
+.rahmen-galerie .passepartout::after {
+  /* der Falz wirft einen schmalen Schatten aufs Bild */
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+.rahmen-galerie .leer-bild {
+  color: #c9c6cf;
+  background: radial-gradient(ellipse 80% 70% at 50% 35%, #fbfaf8, #e4e2e0);
 }
 .rahmen-holz {
   --rb: 10px;
