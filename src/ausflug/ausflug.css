@@ -1,0 +1,201 @@
+@import '../shared/sub.css';
+
+.form-card {
+  margin-bottom: 22px;
+}
+.ort-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ort-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.ort-text svg {
+  width: 20px;
+  height: 20px;
+  color: var(--brand);
+  stroke-width: 2;
+  flex: none;
+}
+
+.tabs-inline {
+  margin-bottom: 14px;
+}
+
+/* Fortschritt */
+.progress-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.progress-head strong {
+  flex: 1;
+}
+.log {
+  list-style: none;
+  margin: 12px 0 4px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.log li span {
+  color: var(--ink-2);
+}
+.log li:first-child {
+  animation: fade-in 0.3s ease;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* Ergebnisse */
+.result-head p {
+  margin: 0;
+}
+.wetter {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+.hinweis {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 14px;
+}
+.ideen {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.idee h3 {
+  margin: 8px 0 2px;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variation-settings: 'SOFT' 50, 'opsz' 48;
+}
+.idee-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.idee-wann {
+  margin-left: auto;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+.idee-wo {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.idee-text,
+.idee-kind,
+.idee-kosten {
+  margin: 8px 0 0;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.idee-kosten {
+  font-size: 14px;
+  color: var(--muted);
+}
+.tag {
+  --c: var(--brand);
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+  color: color-mix(in srgb, var(--c) 80%, var(--ink));
+  font-size: 12px;
+  font-weight: 700;
+}
+.tag-flohmarkt {
+  --c: #c77d1a;
+}
+.tag-fest {
+  --c: #d1495b;
+}
+.tag-markt {
+  --c: #b5651d;
+}
+.tag-natur {
+  --c: #4f9a62;
+}
+.tag-kinder {
+  --c: #e0a21b;
+}
+.tag-kultur {
+  --c: #8a5cc2;
+}
+.tag-sport {
+  --c: #3f8fb0;
+}
+.tag-sonstiges,
+.tag-plain {
+  --c: var(--muted);
+}
+
+.idee-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  max-width: 100%;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.act span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.act svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+  flex: none;
+}
+.act.is-on {
+  color: #b7791f;
+}
+.act.is-on svg {
+  fill: currentColor;
+}

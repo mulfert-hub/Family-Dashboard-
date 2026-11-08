@@ -48,6 +48,51 @@
       "branch": "main"
     },
     {
+      "id": "ausflug",
+      "name": "Ausflüge",
+      "untertitel": "Flohmärkte, Feste und Ausflugsziele in der Nähe",
+      "beschreibung": "Was ist am Wochenende los? Claude durchsucht Veranstaltungskalender, Gemeindeseiten, Lokalzeitungen und Flohmarkt-Portale rund um euren Standort und stellt passende Ideen zusammen, mit Datum, Uhrzeit, Entfernung und Quelle. Die Wettervorhersage fließt mit ein: Bei Regen gibt es mehr Ideen für drinnen.",
+      "funktionen": [
+        "Suche ab dem aktuellen Standort, Umkreis frei wählbar",
+        "Flohmärkte, Dorf- und Stadtfeste, Märkte, Natur, Museen",
+        "Wettervorhersage für den gewählten Tag",
+        "Jede Idee mit Quelle und Karte",
+        "Lieblingsideen merken, auch für die Übersicht"
+      ],
+      "kategorie": "Unterwegs",
+      "icon": "ausflug",
+      "farbe": "#4f9a62",
+      "status": "live",
+      "path": "ausflug/",
+      "screenshots": [
+        "screenshots/ausflug-1.jpg",
+        "screenshots/ausflug-2.jpg"
+      ]
+    },
+    {
+      "id": "galerie",
+      "name": "Galerie",
+      "untertitel": "Zeichnungen und Basteleien unserer Tochter",
+      "beschreibung": "Unsere kleine Ausstellung: Zeichnungen, Bilder und Basteleien fotografieren, mit Titel und Datum versehen und nach Monaten sortiert ansehen. Über das GitHub-Daten-Repository sehen alle Familien-Handys dieselbe Galerie.",
+      "funktionen": [
+        "Fotos aufnehmen oder aus der Mediathek wählen",
+        "Titel, Datum und Notiz zu jedem Werk",
+        "Nach Jahren und Monaten sortiert",
+        "Auf allen Handys gleich (Synchronisation)",
+        "Teilen, z. B. mit Oma und Opa"
+      ],
+      "kategorie": "Erinnerungen",
+      "icon": "galerie",
+      "farbe": "#8a5cc2",
+      "status": "live",
+      "path": "galerie/",
+      "screenshots": [
+        "screenshots/galerie-1.jpg",
+        "screenshots/galerie-2.jpg",
+        "screenshots/galerie-3.jpg"
+      ]
+    },
+    {
       "id": "aufgaben",
       "name": "Aufgaben & Taschengeld",
       "untertitel": "Aufgaben abhaken, Taschengeld im Blick",
