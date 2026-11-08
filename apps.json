@@ -4,12 +4,13 @@
     {
       "id": "kochbuch",
       "name": "Kochbuch",
-      "untertitel": "Rezepte, Kochmodus und Einkaufsliste",
+      "untertitel": "Rezepte, Wochenplan und Einkaufsliste",
       "beschreibung": "Unser gemeinsames Kochbuch zum Durchblättern. Screenshots oder Links von Rezepten einlesen, Claude macht daraus eine schöne Rezeptseite. Beim Kochen führt der Kochmodus Schritt für Schritt, mit Timern und Sprachsteuerung. Die Einkaufsliste fasst Zutaten zusammen und sortiert sie nach Supermarkt-Abteilungen.",
       "funktionen": [
         "Rezepte aus Screenshots, Fotos oder Links",
         "Kochmodus mit Timern und Sprachsteuerung",
         "„Was koche ich heute?“ mit Vorschlägen",
+        "Wochenplan für das Essen",
         "Einkaufsliste nach Abteilungen sortiert",
         "Synchronisation zwischen unseren Handys"
       ],

@@ -821,3 +821,74 @@ button {
 ::view-transition-new(root) {
   animation-duration: 0.18s;
 }
+
+/* ---------- Kochbuch: Wochenplan und Einkaufsliste ---------- */
+.plan-list,
+.shop-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.plan-row {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 10px 0;
+}
+.plan-row + .plan-row {
+  border-top: 1px solid var(--line);
+}
+.plan-label {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+}
+.plan-row.is-today .plan-label {
+  color: var(--brand);
+}
+.plan-meals {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.meal {
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.meal.is-empty {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--muted);
+}
+.shop-list {
+  display: grid;
+  gap: 2px;
+  padding: 6px 0 2px;
+}
+.shop-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  min-height: 30px;
+}
+.shop-dot {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+}
+.shop-more {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--brand);
+  font-size: 15px;
+}
+.shop-empty {
+  margin: 8px 0 0;
+  color: var(--muted);
+}

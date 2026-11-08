@@ -2,8 +2,8 @@
 
 Die gemeinsame App der Familie, mit **einem** Icon auf dem Home-Bildschirm und drei Reitern:
 
-- **Übersicht** (Startseite): ein Dashboard aus Karten, derzeit die Woche mit Kalenderwoche, unsere Apps
-  und was demnächst kommt. Neue Karten kommen nach und nach dazu (siehe unten).
+- **Übersicht** (Startseite): ein Dashboard aus Karten, derzeit die Woche mit Kalenderwoche, **was es zu essen gibt**
+  (Wochenplan aus dem Kochbuch), die offene **Einkaufsliste**, gemerkte Ausflüge, neue Bilder aus der Galerie, unsere Apps und was demnächst kommt. Neue Karten kommen nach und nach dazu (siehe unten).
 - **Apps:** unsere Apps als Symbole, ein Tipp öffnet sie.
 - **Entdecken:** alle Apps wie in einem App Store, mit Highlight, Listen und Detailseiten (Beschreibung, Funktionen,
   Bildschirmfotos). „Laden“ legt eine App zu „Apps“, auf der Detailseite lässt sie sich wieder entfernen.
@@ -34,6 +34,10 @@ Adresse nach dem Veröffentlichen: **https://mulfert-hub.github.io/Family-Dashbo
   App, also den der Startseite. Er bindet deshalb [`public/familie-push.js`](public/familie-push.js) ein und zeigt die
   Mitteilungen aller Apps an. Eine App prüft per Nachricht `familie-push-ping`, ob das möglich ist, und meldet ihr
   Push-Abo dann über diesen Service Worker an (so macht es der Haushaltsplan).
+- **Essen & Einkaufsliste in der Übersicht:** Die Startseite liest Wochenplan und Einkaufsliste direkt aus dem
+  Speicher des Kochbuchs (IndexedDB `kochbuch`, Tabellen `plan` und `shopping`, nur lesend, siehe
+  [`src/kochbuch.ts`](src/kochbuch.ts)). Das klappt, weil das Kochbuch unter derselben Adresse läuft und in der
+  installierten App denselben Speicher nutzt. Wurde das Kochbuch auf dem Gerät noch nie geöffnet, bleiben die Karten weg.
 - **Daten:** Jede App auf dem Home-Bildschirm hat ihren eigenen Speicher. Auf dem iPhone gilt das auch, wenn zwei
   Apps dieselbe Adresse haben. Das Kochbuch in „Familie Ulfert“ beginnt deshalb mit leerem Speicher:
   1. **Mehr → Rezepterkennung mit Claude:** den API-Schlüssel noch einmal eintragen.
