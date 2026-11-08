@@ -49,22 +49,26 @@ body {
 }
 
 /* ---------- Der Museumsraum ---------- */
-/* Decke mit Strahlerschiene, Wand, Sockelleiste und Parkett. Wand und Boden stehen,
+/* Wie ein Foto aus der Galerie: helle Wand mit weichem Licht von oben, an den Rändern
+   dunkler, darunter Sockelleiste und glänzendes Parkett. Wand und Boden stehen,
    die Werke gleiten beim Wischen vorbei – wie beim Gang durch den Saal. */
 .museum {
-  --raum-h: clamp(440px, calc(100dvh - var(--safe-t) - var(--safe-b) - 250px), 760px);
-  --boden-h: 22%;
-  --wand-oben: #f3ede2;
-  --wand-unten: #e3d8c5;
-  --sockel: #f7f3ea;
-  --parkett-1: #a8784a;
-  --parkett-2: #93653b;
-  --decke: #fbf9f4;
+  --raum-h: clamp(440px, calc(100dvh - var(--safe-t) - var(--safe-b) - 230px), 780px);
+  --boden-h: 20%;
+  --wand: #e8e4dc;
+  --wand-licht: #f8f5ef;
+  --wand-rand: #b9b2a5;
+  --sockel: #f4f1ea;
+  --parkett-1: #8a5b33;
+  --parkett-2: #774c29;
+  --parkett-glanz: rgba(255, 235, 200, 0.35);
   position: relative;
   height: var(--raum-h);
   margin: 0 calc(-1 * var(--gutter));
   overflow: hidden;
-  background: linear-gradient(180deg, var(--wand-oben), var(--wand-unten) 78%);
+  background:
+    radial-gradient(ellipse 130% 95% at 50% 30%, transparent 45%, color-mix(in srgb, var(--wand-rand) 70%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--wand) 88%, #000) 0%, var(--wand) 18%, var(--wand) 70%, color-mix(in srgb, var(--wand) 90%, #000) 80%);
   isolation: isolate;
 }
 @media (min-width: 720px) {
@@ -76,62 +80,54 @@ body {
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) .museum {
-    --wand-oben: #2a2d2b;
-    --wand-unten: #1d201e;
-    --sockel: #34312b;
-    --parkett-1: #5a3f27;
-    --parkett-2: #4b341f;
-    --decke: #141614;
+    --wand: #3a3733;
+    --wand-licht: #6b6255;
+    --wand-rand: #0c0c0b;
+    --sockel: #4a4640;
+    --parkett-1: #4a311c;
+    --parkett-2: #3c2716;
+    --parkett-glanz: rgba(255, 220, 170, 0.18);
   }
 }
 :root[data-theme='dark'] .museum {
-  --wand-oben: #2a2d2b;
-  --wand-unten: #1d201e;
-  --sockel: #34312b;
-  --parkett-1: #5a3f27;
-  --parkett-2: #4b341f;
-  --decke: #141614;
+  --wand: #3a3733;
+  --wand-licht: #6b6255;
+  --wand-rand: #0c0c0b;
+  --sockel: #4a4640;
+  --parkett-1: #4a311c;
+  --parkett-2: #3c2716;
+  --parkett-glanz: rgba(255, 220, 170, 0.18);
 }
 
-/* Decke mit Schiene */
+/* Die Decke ist nicht im Bild – nur ein Hauch Schatten oben */
 .decke {
   position: absolute;
   inset: 0 0 auto;
   z-index: 0;
-  height: 26px;
-  background: var(--decke);
-  box-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.35);
-}
-.decke::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 6px;
-  height: 5px;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #5d5a55, #2e2c29);
+  height: 40px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent);
 }
 
-/* Parkett in Perspektive, darüber die Sockelleiste */
+/* Glänzendes Parkett in leichter Perspektive, darüber die Sockelleiste */
 .boden {
   position: absolute;
   inset: auto 0 0;
   z-index: 0;
   height: var(--boden-h);
   overflow: hidden;
-  perspective: 260px;
+  perspective: 420px;
   perspective-origin: 50% 0;
 }
 .boden::before {
   content: '';
   position: absolute;
-  inset: 0 -60% -40%;
+  inset: 0 -40% -60%;
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.28), transparent 45%),
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.18) 0 1px, transparent 1px 46px),
-    repeating-linear-gradient(90deg, var(--parkett-1) 0 46px, var(--parkett-2) 46px 92px);
-  transform: rotateX(58deg);
+    radial-gradient(ellipse 22% 55% at 50% 0%, var(--parkett-glanz), transparent 80%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 30%, rgba(0, 0, 0, 0.2)),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 38px),
+    repeating-linear-gradient(90deg, var(--parkett-1) 0 38px, var(--parkett-2) 38px 76px);
+  transform: rotateX(62deg);
   transform-origin: 50% 0;
 }
 .boden::after {
@@ -139,9 +135,9 @@ body {
   content: '';
   position: absolute;
   inset: 0 0 auto;
-  height: 12px;
-  background: linear-gradient(180deg, var(--sockel), color-mix(in srgb, var(--sockel) 80%, #000));
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+  height: 10px;
+  background: linear-gradient(180deg, var(--sockel), color-mix(in srgb, var(--sockel) 78%, #000));
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 /* Die Spur mit allen Wandstücken – waagerecht wischen, je ein Werk rastet ein */
@@ -186,38 +182,26 @@ body {
   }
 }
 
-/* Strahler an der Schiene und sein Lichtkegel auf der Wand */
+/* Licht von oben: ein heller Lichtfleck auf der Wand über und um das Bild */
 .spot {
   position: absolute;
-  top: 18px;
+  top: 0;
   left: 50%;
-  width: 22px;
-  height: 16px;
-  margin-left: -11px;
-  border-radius: 4px 4px 9px 9px;
-  background: linear-gradient(180deg, #44413c, #1f1d1b);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+  width: 0;
+  height: 0;
   z-index: 1;
 }
 .spot::after {
   content: '';
   position: absolute;
-  top: 12px;
+  top: -10px;
   left: 50%;
-  width: 360px;
-  height: calc(var(--raum-h) * 0.82);
+  width: min(150vw, 620px);
+  height: calc(var(--raum-h) * 0.95);
   transform: translateX(-50%);
-  background: radial-gradient(ellipse 46% 62% at 50% 6%, rgba(255, 246, 220, 0.75), rgba(255, 240, 205, 0.22) 55%, transparent 78%);
+  background: radial-gradient(ellipse 42% 58% at 50% 20%, var(--wand-licht), color-mix(in srgb, var(--wand-licht) 45%, transparent) 50%, transparent 75%);
   pointer-events: none;
   z-index: -1;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .spot::after {
-    background: radial-gradient(ellipse 46% 62% at 50% 6%, rgba(255, 236, 190, 0.3), rgba(255, 230, 180, 0.08) 55%, transparent 78%);
-  }
-}
-:root[data-theme='dark'] .spot::after {
-  background: radial-gradient(ellipse 46% 62% at 50% 6%, rgba(255, 236, 190, 0.3), rgba(255, 230, 180, 0.08) 55%, transparent 78%);
 }
 
 .haengung {
@@ -425,6 +409,34 @@ body {
     inset 0 0 0 5px rgba(120, 80, 20, 0.35),
     0 14px 22px -10px rgba(40, 25, 10, 0.6),
     0 2px 4px rgba(0, 0, 0, 0.25);
+}
+/* Der schwere Goldrahmen der Ausstellung: Profil mit Hohlkehle, Perlstab und Patina */
+.rahmen-prunk {
+  --rb: clamp(14px, 4.2vw, 22px);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 245, 200, 0.55), transparent 55%),
+    linear-gradient(135deg, #6f4a10, #e9c868 18%, #a87a22 34%, #f7e09a 50%, #9c6f1d 68%, #e2bd5c 84%, #6a460f);
+  box-shadow:
+    inset 0 0 0 1px rgba(60, 35, 5, 0.7),
+    inset 0 0 0 3px rgba(255, 236, 170, 0.75),
+    inset 0 0 0 5px rgba(120, 80, 15, 0.6),
+    inset 0 0 0 calc(var(--rb) - 6px) rgba(0, 0, 0, 0),
+    inset 0 0 calc(var(--rb) * 0.6) rgba(70, 40, 5, 0.55),
+    0 22px 30px -14px rgba(25, 15, 5, 0.65),
+    0 3px 6px rgba(0, 0, 0, 0.3);
+}
+.rahmen-prunk::before {
+  /* innere Zierleiste (Perlstab) direkt am Passepartout */
+  content: '';
+  position: absolute;
+  inset: calc(var(--rb) - 4px);
+  border: 2px dotted rgba(255, 238, 180, 0.9);
+  outline: 1px solid rgba(80, 50, 10, 0.7);
+  pointer-events: none;
+}
+.rahmen-prunk .passepartout {
+  padding: 8%;
+  background: #f6f2e8;
 }
 .rahmen-holz {
   --rb: 10px;

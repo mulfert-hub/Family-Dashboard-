@@ -61,8 +61,9 @@ export function plakette(w: Werk, inv: string | undefined, groesse: 'klein' | 'm
     </div>`;
 }
 
-export function gerahmt(w: Werk, img: string): string {
-  return `<span class="rahmen rahmen-${rahmenFuer(w.id)}"><span class="passepartout">${img}</span></span>`;
+/** Jedes Werk kommt in den schweren Goldrahmen der Ausstellung – wie der leere Rahmen im Museum, nur endlich gefüllt */
+export function gerahmt(_w: Werk, img: string): string {
+  return `<span class="rahmen rahmen-prunk"><span class="passepartout">${img}</span></span>`;
 }
 
 const DRAHT = `<svg class="draht" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true">
@@ -106,7 +107,7 @@ export function leereWand(): string {
       `<li class="wandstueck leere-wand" style="--neigung:-1deg">
         <span class="spot" aria-hidden="true"></span>
         <div class="haengung">
-          <span class="aufhaengung">${DRAHT}<span class="rahmen rahmen-gold"><span class="passepartout"><span class="leer-bild">?</span></span></span></span>
+          <span class="aufhaengung">${DRAHT}<span class="rahmen rahmen-prunk"><span class="passepartout"><span class="leer-bild">?</span></span></span></span>
         </div>
         <div class="plakette plakette-mittel"><strong>Hier könnte Ihr Meisterwerk hängen</strong><span>Mit + ein Bild von ${KUENSTLERIN} fotografieren</span><small>Künstlerin: ${KUENSTLERIN}</small></div>
       </li>`,
