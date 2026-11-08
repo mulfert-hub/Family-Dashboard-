@@ -25,6 +25,7 @@ const parseIso = (s: string) => {
 let urls: string[] = [];
 let syncText = '';
 let syncFehler = false;
+let letzteFehlend = 0;
 
 // ---------- Gerüst ----------
 function shell(): void {
@@ -36,6 +37,7 @@ function shell(): void {
         <h1>Galerie</h1>
         <p class="sync-line" id="sync"></p>
       </header>
+      <div id="sync-banner"></div>
       <div id="werke"></div>
     </main>
     <label class="fab" aria-label="Neues Werk aufhängen">
@@ -88,13 +90,50 @@ async function renderWerke(): Promise<void> {
 function renderSync(): void {
   const z = zugang();
   const el = $('#sync');
+  const banner = $('#sync-banner');
   if (!z) {
-    el.innerHTML = `<button type="button" class="link" data-sync="einrichten">${icon('sync')} Synchronisation einrichten</button>`;
+    el.innerHTML = '';
+    banner.innerHTML = `<div class="sync-banner">
+        <p><strong>Diese Galerie ist nur auf diesem Handy.</strong> Damit alle Familien-Handys dieselben Bilder sehen, einmal pro Handy die Synchronisation einrichten.</p>
+        <button type="button" class="pill pill-big" data-sync="einrichten">Synchronisation einrichten</button>
+      </div>`;
     return;
   }
   const t = letzteSync();
   const zeit = t ? `zuletzt ${new Date(t).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })}` : 'noch nie';
-  el.innerHTML = `<button type="button" class="link${syncFehler ? ' is-error' : ''}" data-sync="jetzt">${icon('sync')} ${esc(syncText || `Synchronisiert ${zeit}`)}</button>`;
+  const text = syncText || (letzteFehlend ? `${letzteFehlend} ${letzteFehlend === 1 ? 'Bild fehlt' : 'Bilder fehlen'} noch · ${zeit}` : `Synchronisiert ${zeit}`);
+  el.innerHTML = `<button type="button" class="link${syncFehler ? ' is-error' : ''}" data-sync="status">${icon('sync')} ${esc(text)}</button>`;
+  banner.innerHTML = syncFehler
+    ? `<div class="sync-banner is-error"><p><strong>Synchronisation klappt gerade nicht.</strong> ${esc(syncText)}</p>
+        <button type="button" class="pill" data-sync="status">Details</button></div>`
+    : '';
+}
+
+/** Übersicht: womit verbunden, was zuletzt passiert ist, Knöpfe zum Weitermachen */
+async function statusSheet(): Promise<void> {
+  const z = zugang();
+  const anzahl = await db.werke.count();
+  const mitBild = await db.bilder.count();
+  const t = letzteSync();
+  const sheet = $<HTMLDialogElement>('#sheet');
+  sheet.innerHTML = `
+    <div class="sheet-body">
+      <div class="sheet-head">
+        <button type="button" class="link" data-close>Schließen</button>
+        <strong>Synchronisation</strong>
+        <span></span>
+      </div>
+      <dl class="status-liste">
+        <div><dt>Verbunden mit</dt><dd>${z ? `${esc(z.repo)}<small>${z.quelle === 'kochbuch' ? 'Zugang aus dem Kochbuch' : 'Zugang der Galerie'}</small>` : '–'}</dd></div>
+        <div><dt>Zuletzt</dt><dd>${t ? esc(new Date(t).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' })) : 'noch nie'}</dd></div>
+        <div><dt>Auf diesem Handy</dt><dd>${anzahl} ${anzahl === 1 ? 'Werk' : 'Werke'}, ${mitBild} mit Bild</dd></div>
+        ${syncFehler ? `<div><dt>Fehler</dt><dd class="is-error">${esc(syncText)}</dd></div>` : ''}
+      </dl>
+      <p class="fine">Die Galerie gleicht sich beim Öffnen, nach jeder Änderung und jede Minute ab. Auf jedem Handy muss die Synchronisation einmal eingerichtet sein – auf dem iPhone in der Familien-App selbst, nicht im einzelnen Kochbuch-Icon.</p>
+      <button type="button" class="pill pill-big pill-wide" data-sync="jetzt">Jetzt synchronisieren</button>
+      <button type="button" class="link" data-sync="einrichten">Andere Zugangsdaten eintragen</button>
+    </div>`;
+  if (!sheet.open) sheet.showModal();
 }
 
 /** Kleine Vorschau für die Übersicht der Familien-App (liegt im gemeinsamen Speicher) */
@@ -126,7 +165,8 @@ async function sync(): Promise<void> {
       renderSync();
     });
     syncText = '';
-    if (r.runter || r.hoch) await renderWerke();
+    letzteFehlend = r.fehlend;
+    if (r.runter || r.geaendert) await renderWerke();
   } catch (e) {
     syncFehler = true;
     syncText = e instanceof AuthError ? 'GitHub-Token ungültig – bitte neu einrichten' : e instanceof Error ? e.message : String(e);
@@ -342,13 +382,21 @@ root.addEventListener('click', (e) => {
   if (share) return void teilen(share.dataset.teilen!);
   const s = t.closest<HTMLButtonElement>('[data-sync]');
   if (s) {
-    if (s.dataset.sync === 'einrichten') syncSheet();
-    else if (s.dataset.sync === 'trennen') {
+    const sheet = $<HTMLDialogElement>('#sheet');
+    if (s.dataset.sync === 'einrichten') {
+      if (sheet.open) sheet.close();
+      syncSheet();
+    } else if (s.dataset.sync === 'trennen') {
       trennen();
-      $<HTMLDialogElement>('#sheet').close();
+      sheet.close();
       renderSync();
-    } else if (syncFehler && /Token/.test(syncText)) syncSheet();
-    else void sync();
+    } else if (s.dataset.sync === 'status') void statusSheet();
+    else {
+      // „Jetzt synchronisieren“ im Status-Blatt: danach den Stand im Blatt zeigen
+      void sync().then(() => {
+        if (sheet.open) void statusSheet();
+      });
+    }
   }
 });
 
@@ -356,6 +404,13 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') void sync();
 });
 window.addEventListener('online', () => void sync());
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) void sync();
+});
+// Solange die Galerie offen ist, jede Minute nach Neuem schauen
+setInterval(() => {
+  if (document.visibilityState === 'visible') void sync();
+}, 60 * 1000);
 
 shell();
 renderSync();
