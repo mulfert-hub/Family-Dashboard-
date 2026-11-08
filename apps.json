@@ -73,8 +73,8 @@
     {
       "id": "galerie",
       "name": "Galerie",
-      "untertitel": "Unser Museum für Zeichnungen und Basteleien",
-      "beschreibung": "Willkommen im Museum Ulfert! Jedes Kunstwerk hängt gerahmt an der Wand, mit Messingplakette für Titel, Technik und Inventarnummer. Das neueste Werk steht auf der Staffelei. Über das GitHub-Daten-Repository sehen alle Familien-Handys dieselbe Ausstellung.",
+      "untertitel": "Theas Museum für Zeichnungen und Basteleien",
+      "beschreibung": "Willkommen im Museum Ulfert, mit Werken von Thea! Jedes Kunstwerk hängt gerahmt an der Wand, mit Messingplakette für Titel, Technik und Inventarnummer. Das neueste Werk steht auf der Staffelei. Über das GitHub-Daten-Repository sehen alle Familien-Handys dieselbe Ausstellung.",
       "funktionen": [
         "Fotos aufnehmen oder aus der Mediathek wählen",
         "Goldrahmen, Holz, Schwarz, Weiß oder Bunt – jedes Bild hängt ein bisschen schief",
@@ -97,7 +97,7 @@
       "id": "aufgaben",
       "name": "Aufgaben & Taschengeld",
       "untertitel": "Aufgaben abhaken, Taschengeld im Blick",
-      "beschreibung": "Für unsere Tochter: erledigte Aufgaben abhaken und sehen, wie das Taschengeld wächst.",
+      "beschreibung": "Für Thea: erledigte Aufgaben abhaken und sehen, wie das Taschengeld wächst.",
       "funktionen": [],
       "kategorie": "Kinder",
       "icon": "aufgaben",
