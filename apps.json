@@ -74,12 +74,12 @@
       "id": "galerie",
       "name": "Galerie",
       "untertitel": "Theas Museum für Zeichnungen und Basteleien",
-      "beschreibung": "Willkommen im Museum Ulfert, mit Werken von Thea! Jedes Kunstwerk hängt gerahmt an der Wand, mit Messingplakette für Titel, Technik und Inventarnummer. Das neueste Werk steht auf der Staffelei. Über das GitHub-Daten-Repository sehen alle Familien-Handys dieselbe Ausstellung.",
+      "beschreibung": "Willkommen im Museum Ulfert, mit Werken von Thea! Jedes Kunstwerk hängt gerahmt im Lichtkegel an der Museumswand, mit Messingplakette für Titel, Technik und Inventarnummer. Nach links und rechts wischt man zum nächsten Gemälde, ein Tipp zeigt es bildschirmfüllend. Über das GitHub-Daten-Repository sehen alle Familien-Handys dieselbe Ausstellung.",
       "funktionen": [
         "Fotos aufnehmen oder aus der Mediathek wählen",
         "Goldrahmen, Holz, Schwarz, Weiß oder Bunt – jedes Bild hängt ein bisschen schief",
         "Plakette mit Titel, Technik („Wachsmalstift auf Papier“) und Inventarnummer",
-        "Säle nach Monaten, das Neueste auf der Staffelei",
+        "Museumsraum zum Durchwischen, Tipp fürs große Bild",
         "Auf allen Handys gleich (Synchronisation) und teilbar"
       ],
       "kategorie": "Erinnerungen",

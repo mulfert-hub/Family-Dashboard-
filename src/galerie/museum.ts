@@ -1,4 +1,4 @@
-// Das kleine Museum: Rahmen, Plaketten und die Staffelei für das neueste Werk.
+// Das kleine Museum: ein Raum mit Wand und Parkett, Rahmen und Plaketten – ein Werk pro Wandstück.
 // Rahmen und Neigung hängen fest am Werk (aus der ID berechnet), damit jedes Bild immer gleich hängt.
 import { esc } from '../shared/html';
 import type { Werk } from './db';
@@ -61,52 +61,57 @@ export function plakette(w: Werk, inv: string | undefined, groesse: 'klein' | 'm
     </div>`;
 }
 
-export function gerahmt(w: Werk, img: string): string {
-  return `<span class="rahmen rahmen-${rahmenFuer(w.id)}"><span class="passepartout">${img}</span></span>`;
+/** Jedes Werk kommt in den Holzrahmen der Ausstellung – wie der leere Rahmen im Museum, nur endlich gefüllt */
+export function gerahmt(_w: Werk, img: string): string {
+  return `<span class="rahmen rahmen-galerie"><span class="passepartout">${img}</span></span>`;
 }
 
 const DRAHT = `<svg class="draht" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true">
     <path d="M18 26 L50 5 L82 26" fill="none" stroke="currentColor" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
   </svg><span class="nagel" aria-hidden="true"></span>`;
 
-/** Ein Bild an der Wand: Nagel, Draht, Rahmen, Plakette */
-export function exponat(w: Werk, img: string, inv: string | undefined): string {
-  const label = `${w.titel || 'Ohne Titel'}, ${technikZeile(w)}`;
-  return `<li class="exponat" style="--neigung:${neigungFuer(w.id)}deg">
-      <button type="button" class="aufhaengung" data-werk="${esc(w.id)}" aria-label="${esc(label)}">
-        ${DRAHT}
-        ${gerahmt(w, img)}
-      </button>
-      ${plakette(w, inv)}
+/** Ein Wandstück im Museumsraum: Lichtkegel, Nagel, Draht, Rahmen und daneben die Plakette */
+export function wandstueck(w: Werk, img: string, inv: string | undefined, neu = false): string {
+  const label = `${w.titel || 'Ohne Titel'}, ${technikZeile(w)} – groß ansehen`;
+  return `<li class="wandstueck" data-id="${esc(w.id)}" style="--neigung:${neigungFuer(w.id)}deg">
+      <span class="spot" aria-hidden="true"></span>
+      <div class="haengung">
+        <button type="button" class="aufhaengung" data-werk="${esc(w.id)}" aria-label="${esc(label)}">
+          ${DRAHT}
+          ${gerahmt(w, img)}
+          ${neu ? '<span class="sticker">Neu!</span>' : ''}
+        </button>
+      </div>
+      ${plakette(w, inv, 'mittel')}
     </li>`;
 }
 
-/** Das neueste Werk auf der Staffelei */
-export function staffelei(w: Werk, img: string, inv: string | undefined): string {
-  return `<section class="staffelei-bereich" aria-label="Neu in der Ausstellung">
-      <div class="staffelei">
-        <svg class="beine" viewBox="0 0 200 320" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M100 0 L100 320" class="bein-hinten"/>
-          <path d="M84 0 L22 320"/>
-          <path d="M116 0 L178 320"/>
-          <path d="M42 250 L158 250" class="strebe"/>
-        </svg>
-        <button type="button" class="leinwand" data-werk="${esc(w.id)}" aria-label="${esc(`Neu: ${w.titel || 'Ohne Titel'}`)}">
-          ${img}
-          <span class="sticker">Neu!</span>
-        </button>
-        <span class="ablage" aria-hidden="true"></span>
-      </div>
-      ${plakette(w, inv, 'mittel')}
+/** Der Museumsraum: Decke mit Strahlerschiene, Wand, Parkett – die Werke hängen nebeneinander zum Wischen */
+export function museumsraum(stuecke: string[], mehrere: boolean): string {
+  const pfeile = mehrere
+    ? `<button type="button" class="raum-pfeil raum-pfeil-links" data-schritt="-1" aria-label="Vorheriges Werk"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6l-6 6 6 6"/></svg></button>
+       <button type="button" class="raum-pfeil raum-pfeil-rechts" data-schritt="1" aria-label="Nächstes Werk"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6"/></svg></button>`
+    : '';
+  return `<section class="museum" aria-label="Ausstellung" aria-roledescription="Karussell">
+      <span class="decke" aria-hidden="true"></span>
+      <span class="boden" aria-hidden="true"></span>
+      <ul class="raum-spur" id="spur" tabindex="0">${stuecke.join('')}</ul>
+      ${pfeile}
     </section>`;
 }
 
 /** Leere Wand: ein leerer Rahmen wartet auf das erste Kunstwerk */
 export function leereWand(): string {
-  return `<div class="leere-wand">
-      <div class="exponat" style="--neigung:-1deg">
-        <span class="aufhaengung">${DRAHT}<span class="rahmen rahmen-gold"><span class="passepartout"><span class="leer-bild">?</span></span></span></span>
-        <div class="plakette"><strong>Hier könnte Ihr Meisterwerk hängen</strong><span>Mit + ein Bild von ${KUENSTLERIN} fotografieren</span><small>Künstlerin: ${KUENSTLERIN}</small></div>
-      </div>
-    </div>`;
+  return museumsraum(
+    [
+      `<li class="wandstueck leere-wand" style="--neigung:-1deg">
+        <span class="spot" aria-hidden="true"></span>
+        <div class="haengung">
+          <span class="aufhaengung">${DRAHT}<span class="rahmen rahmen-galerie"><span class="passepartout"><span class="leer-bild">?</span></span></span></span>
+        </div>
+        <div class="plakette plakette-mittel"><strong>Hier könnte Ihr Meisterwerk hängen</strong><span>Mit + ein Bild von ${KUENSTLERIN} fotografieren</span><small>Künstlerin: ${KUENSTLERIN}</small></div>
+      </li>`,
+    ],
+    false,
+  );
 }
