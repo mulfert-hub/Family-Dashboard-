@@ -8,6 +8,7 @@ import { icon } from '../icons';
 import { backBar, esc, writeJson } from '../shared/html';
 import { db, neueId, type Werk } from './db';
 import { dataUrl, prepare } from './image';
+import { exponat, gerahmt, inventarNummern, leereWand, plakette, staffelei, TECHNIKEN } from './museum';
 import { AuthError, einrichten, letzteSync, synchronisieren, trennen, zugang } from './sync';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -31,13 +32,13 @@ function shell(): void {
     <main class="view sub-view">
       ${backBar()}
       <header class="large-head">
-        <p class="eyebrow">Unsere kleine Ausstellung</p>
+        <p class="eyebrow">Museum Ulfert · Eintritt frei</p>
         <h1>Galerie</h1>
         <p class="sync-line" id="sync"></p>
       </header>
       <div id="werke"></div>
     </main>
-    <label class="fab" aria-label="Werk hinzufügen">
+    <label class="fab" aria-label="Neues Werk aufhängen">
       ${icon('plus')}
       <input type="file" accept="image/*" multiple id="datei" hidden />
     </label>
@@ -52,32 +53,35 @@ async function renderWerke(): Promise<void> {
   urls = [];
   const el = $('#werke');
   if (!werke.length) {
-    el.innerHTML = `<div class="empty"><p>Noch keine Werke in der Galerie.</p><p>Mit <strong>+</strong> unten rechts das erste Bild fotografieren.</p></div>`;
+    el.innerHTML = leereWand();
     return;
   }
-  // nach Monaten gruppieren
-  const gruppen = new Map<string, Werk[]>();
+  const inv = inventarNummern(werke);
+  const img = (w: Werk) => {
+    const b = bilder.get(w.id);
+    if (!b) return `<span class="leer-bild">${icon('galerie')}</span>`;
+    const u = URL.createObjectURL(b.thumb);
+    urls.push(u);
+    return `<img src="${u}" alt="" loading="lazy" />`;
+  };
+  // Das zuletzt aufgehängte Werk steht vorn auf der Staffelei
+  const neuestes = werke.reduce((a, b) => (b.erstellt > a.erstellt ? b : a));
+  // Säle nach Monaten
+  const saele = new Map<string, Werk[]>();
   for (const w of werke) {
     const k = w.datum.slice(0, 7);
-    gruppen.set(k, [...(gruppen.get(k) ?? []), w]);
+    saele.set(k, [...(saele.get(k) ?? []), w]);
   }
-  el.innerHTML = [...gruppen]
-    .map(([monat, list]) => {
-      const tiles = list
-        .map((w) => {
-          const b = bilder.get(w.id);
-          let img = `<span class="tile-missing">${icon('galerie')}</span>`;
-          if (b) {
-            const u = URL.createObjectURL(b.thumb);
-            urls.push(u);
-            img = `<img src="${u}" alt="" loading="lazy" />`;
-          }
-          return `<li><button type="button" class="werk" data-werk="${esc(w.id)}" aria-label="${esc(w.titel || 'Werk ohne Titel')}, ${esc(TAG.format(parseIso(w.datum)))}">${img}${w.titel ? `<span class="werk-titel">${esc(w.titel)}</span>` : ''}</button></li>`;
-        })
-        .join('');
-      return `<section class="monat"><h2>${esc(MONAT.format(parseIso(`${monat}-01`)))} <span>${list.length}</span></h2><ul class="werk-grid">${tiles}</ul></section>`;
-    })
-    .join('');
+  el.innerHTML =
+    staffelei(neuestes, img(neuestes), inv.get(neuestes.id)) +
+    [...saele]
+      .map(
+        ([monat, list]) => `<section class="saal">
+          <h2><span class="saal-schild">Saal ${esc(MONAT.format(parseIso(`${monat}-01`)))}</span><span class="saal-anzahl">${list.length} ${list.length === 1 ? 'Werk' : 'Werke'}</span></h2>
+          <ul class="wand">${list.map((w) => exponat(w, img(w), inv.get(w.id))).join('')}</ul>
+        </section>`,
+      )
+      .join('');
   void vorschauSpeichern(werke, bilder);
 }
 
@@ -137,15 +141,20 @@ function sheetForm(w: Partial<Werk>, vorschau: string, neu: boolean): void {
     <form method="dialog" class="sheet-body" id="werk-form">
       <div class="sheet-head">
         <button type="button" class="link" data-close>Abbrechen</button>
-        <strong>${neu ? 'Neues Werk' : 'Bearbeiten'}</strong>
-        <button type="submit" class="link link-strong">Sichern</button>
+        <strong>${neu ? 'Neues Werk aufhängen' : 'Plakette bearbeiten'}</strong>
+        <button type="submit" class="link link-strong">${neu ? 'Aufhängen' : 'Sichern'}</button>
       </div>
       ${vorschau ? `<img class="sheet-img" src="${vorschau}" alt="" />` : ''}
       <div class="field"><label class="label" for="titel">Titel</label>
-        <input class="input" id="titel" name="titel" value="${esc(w.titel ?? '')}" placeholder="z. B. Unser Haus im Herbst" autocomplete="off" /></div>
+        <input class="input" id="titel" name="titel" value="${esc(w.titel ?? '')}" placeholder="z. B. Sonnenuntergang mit Katze" autocomplete="off" /></div>
+      <div class="field"><label class="label" for="technik">Technik</label>
+        <select class="input" id="technik" name="technik">
+          <option value="">– keine Angabe –</option>
+          ${TECHNIKEN.map((t) => `<option${w.technik === t ? ' selected' : ''}>${t}</option>`).join('')}
+        </select></div>
       <div class="field"><label class="label" for="datum">Entstanden am</label>
         <input class="input" id="datum" name="datum" type="date" value="${esc(w.datum ?? isoDate(new Date()))}" max="${isoDate(new Date())}" /></div>
-      <div class="field"><label class="label" for="notiz">Notiz</label>
+      <div class="field"><label class="label" for="notiz">Was die Künstlerin dazu sagt</label>
         <textarea class="input" id="notiz" name="notiz" rows="2" placeholder="Was sie dazu erzählt hat …">${esc(w.notiz ?? '')}</textarea></div>
     </form>`;
   sheet.showModal();
@@ -185,14 +194,15 @@ async function formSichern(form: HTMLFormElement): Promise<void> {
   const titel = String(data.get('titel') ?? '').trim();
   const datum = String(data.get('datum') || isoDate(new Date()));
   const notiz = String(data.get('notiz') ?? '').trim();
+  const technik = String(data.get('technik') ?? '').trim();
   const now = Date.now();
   if (bearbeiteId) {
-    await db.werke.update(bearbeiteId, { titel, datum, notiz, geaendert: now });
+    await db.werke.update(bearbeiteId, { titel, datum, notiz, technik, geaendert: now });
   } else if (neuesBild) {
     const id = neueId();
     const bild = neuesBild;
     await db.transaction('rw', db.werke, db.bilder, async () => {
-      await db.werke.put({ id, titel, datum, notiz, erstellt: now, geaendert: now });
+      await db.werke.put({ id, titel, datum, notiz, technik, erstellt: now, geaendert: now });
       await db.bilder.put({ id, ...bild });
     });
   }
@@ -210,19 +220,17 @@ async function zeigeWerk(id: string): Promise<void> {
   const viewer = $<HTMLDialogElement>('#viewer');
   const u = b ? URL.createObjectURL(b.blob) : '';
   if (u) urls.push(u);
+  const inv = inventarNummern(await db.werke.toArray()).get(id);
   viewer.innerHTML = `
     <div class="viewer-body">
       <div class="viewer-top"><button type="button" class="round" data-close aria-label="Schließen">${icon('schliessen')}</button></div>
-      ${u ? `<img class="viewer-img" src="${u}" alt="${esc(w.titel)}" />` : `<div class="tile-missing big">${icon('galerie')}<p>Bild wird noch geladen</p></div>`}
-      <div class="viewer-info">
-        <h2>${esc(w.titel || 'Ohne Titel')}</h2>
-        <p class="viewer-date">${esc(TAG.format(parseIso(w.datum)))}</p>
-        ${w.notiz ? `<p class="viewer-note">${esc(w.notiz)}</p>` : ''}
-        <div class="viewer-actions">
-          ${b && 'share' in navigator ? `<button type="button" class="act" data-teilen="${esc(id)}">${icon('teilen')}<span>Teilen</span></button>` : ''}
-          <button type="button" class="act" data-bearbeiten="${esc(id)}">${icon('stift')}<span>Bearbeiten</span></button>
-          <button type="button" class="act act-danger" data-loeschen="${esc(id)}">${icon('muell')}<span>Löschen</span></button>
-        </div>
+      <div class="viewer-bild">${gerahmt(w, u ? `<img src="${u}" alt="${esc(w.titel)}" />` : `<span class="leer-bild">${icon('galerie')}</span>`)}</div>
+      ${plakette(w, inv, 'gross')}
+      <p class="viewer-date">Entstanden am ${esc(TAG.format(parseIso(w.datum)))}</p>
+      <div class="viewer-actions">
+        ${b && 'share' in navigator ? `<button type="button" class="act" data-teilen="${esc(id)}">${icon('teilen')}<span>Teilen</span></button>` : ''}
+        <button type="button" class="act" data-bearbeiten="${esc(id)}">${icon('stift')}<span>Plakette bearbeiten</span></button>
+        <button type="button" class="act act-danger" data-loeschen="${esc(id)}">${icon('muell')}<span>Abhängen</span></button>
       </div>
     </div>`;
   viewer.showModal();
@@ -230,7 +238,7 @@ async function zeigeWerk(id: string): Promise<void> {
 
 async function loeschen(id: string): Promise<void> {
   const w = await db.werke.get(id);
-  if (!confirm(`„${w?.titel || 'Dieses Werk'}“ wirklich löschen? Es verschwindet auf allen Handys.`)) return;
+  if (!confirm(`„${w?.titel || 'Dieses Werk'}“ abhängen? Das Bild wird gelöscht und verschwindet auf allen Handys.`)) return;
   await db.transaction('rw', db.werke, db.bilder, db.geloescht, async () => {
     await db.werke.delete(id);
     await db.bilder.delete(id);

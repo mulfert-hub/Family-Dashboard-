@@ -24,92 +24,381 @@
   font-weight: 700;
 }
 
-/* Werke nach Monaten */
-.monat + .monat {
-  margin-top: 26px;
+/* ---------- Museumswand ---------- */
+body {
+  --wand: #ece4d6;
+  --wand-streifen: rgba(120, 90, 50, 0.045);
+  --leiste: #d9cdb8;
+  --licht: rgba(255, 244, 214, 0.55);
+  --draht: #6d6250;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 26px, var(--wand-streifen) 26px 52px),
+    var(--wand);
 }
-.monat h2 {
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) body {
+    --wand: #1e2421;
+    --wand-streifen: rgba(255, 255, 255, 0.025);
+    --leiste: #2c3430;
+    --licht: rgba(255, 236, 190, 0.1);
+    --draht: #a39880;
+  }
+}
+.sub-view .nav-bar {
+  background: color-mix(in srgb, var(--wand) 85%, transparent);
+}
+
+/* Saal-Überschrift als Schild */
+.saal {
+  margin-top: 34px;
+}
+.saal h2 {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin: 0 0 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 26px;
+  padding-bottom: 10px;
+  border-bottom: 3px double var(--leiste);
+}
+.saal-schild {
   font-family: var(--font-display);
   font-size: 21px;
   font-weight: 600;
   font-variation-settings: 'SOFT' 50, 'opsz' 48;
 }
-.monat h2 span {
-  font-family: var(--font-ui);
+.saal-anzahl {
+  color: var(--muted);
   font-size: 13px;
   font-weight: 600;
-  color: var(--muted);
 }
-.werk-grid {
+
+.wand {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 34px 22px;
+  align-items: start;
 }
 @media (min-width: 560px) {
-  .werk-grid {
+  .wand {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-.werk {
+
+/* Ein Exponat: Lichtkegel, Nagel, Draht, Rahmen */
+.exponat {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+.exponat::before {
+  content: '';
+  position: absolute;
+  top: -34px;
+  left: -14%;
+  right: -14%;
+  height: 85%;
+  background: radial-gradient(ellipse 50% 60% at 50% 0%, var(--licht), transparent 75%);
+  pointer-events: none;
+}
+.aufhaengung {
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  padding: 0;
+  padding: 18px 0 0;
   border: 0;
-  border-radius: 16px;
-  overflow: hidden;
-  background: var(--surface-2);
-  box-shadow: var(--shadow);
+  background: none;
   cursor: pointer;
+  transform: rotate(var(--neigung, 0deg));
+  transform-origin: 50% 0;
+  transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
-.werk img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.2s ease;
+.aufhaengung:active,
+.aufhaengung:focus-visible {
+  transform: rotate(0deg) scale(0.98);
 }
-.werk:active img {
-  transform: scale(0.97);
+@media (hover: hover) {
+  .aufhaengung:hover {
+    transform: rotate(0deg);
+  }
 }
-.werk-titel {
+.draht {
   position: absolute;
+  top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 22px 10px 8px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: 100%;
+  height: 22px;
+  color: var(--draht);
+  overflow: visible;
 }
-.tile-missing {
+.nagel {
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d8d2c4, #6b6255 70%);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+/* Rahmen */
+.rahmen {
+  --rb: 9px;
+  position: relative;
+  display: block;
+  padding: var(--rb);
+  box-shadow:
+    0 14px 22px -10px rgba(40, 25, 10, 0.55),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.passepartout {
+  display: block;
+  padding: 9%;
+  background: #fbf8f1;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), inset 2px 2px 6px rgba(0, 0, 0, 0.18);
+}
+.passepartout img {
+  display: block;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.rahmen-gold {
+  --rb: 11px;
+  background: linear-gradient(135deg, #8f6418, #f3d27a 22%, #b8892b 45%, #f6dc8c 65%, #a7771f 85%, #7b5412);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 238, 180, 0.55),
+    inset 0 0 0 5px rgba(120, 80, 20, 0.35),
+    0 14px 22px -10px rgba(40, 25, 10, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.25);
+}
+.rahmen-holz {
+  --rb: 10px;
+  background:
+    repeating-linear-gradient(100deg, rgba(0, 0, 0, 0.08) 0 2px, transparent 2px 7px),
+    linear-gradient(90deg, #5b3a1e, #8b5a2b 40%, #6e4523);
+}
+.rahmen-holz .passepartout {
+  padding: 0;
+}
+.rahmen-schwarz {
+  --rb: 6px;
+  background: #1f1f22;
+}
+.rahmen-weiss {
+  --rb: 7px;
+  background: #fdfdfb;
+}
+.rahmen-weiss .passepartout {
+  padding: 6%;
+}
+.rahmen-bunt {
+  --rb: 10px;
+  background: repeating-linear-gradient(45deg, #e4573d 0 9px, #f2b134 9px 18px, #4f9a62 18px 27px, #3f8fb0 27px 36px, #8a5cc2 36px 45px);
+}
+.rahmen-bunt .passepartout {
+  padding: 0;
+  border: 3px solid #fff;
+}
+
+.leer-bild {
   display: grid;
   place-items: center;
-  width: 100%;
+  aspect-ratio: 4 / 5;
+  color: #b9ae98;
+  font-family: var(--font-display);
+  font-size: 48px;
+  background: repeating-linear-gradient(45deg, #f6f1e6 0 10px, #efe8da 10px 20px);
+}
+.leer-bild svg {
+  width: 40%;
+  height: auto;
+  stroke-width: 1.4;
+}
+
+/* Messing-Plakette */
+.plakette {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  width: min(92%, 260px);
+  margin-top: 16px;
+  padding: 7px 14px 8px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ecd9a0, #cfac5c 55%, #b8933f);
+  color: #3a2a0c;
+  text-align: center;
+  line-height: 1.25;
+  box-shadow: inset 0 1px 0 rgba(255, 250, 220, 0.8), inset 0 -1px 0 rgba(90, 60, 10, 0.4), 0 3px 6px rgba(40, 25, 5, 0.35);
+}
+.plakette::before,
+.plakette::after {
+  /* Schräubchen */
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff5d0, #7a5a1a);
+}
+.plakette::before {
+  left: 5px;
+}
+.plakette::after {
+  right: 5px;
+}
+.plakette strong {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13.5px;
+  font-weight: 600;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  overflow-wrap: break-word;
+}
+.plakette-klein {
+  padding: 6px 12px 7px;
+}
+.plakette-klein strong {
+  font-size: 12.5px;
+}
+.plakette-mittel {
+  width: min(100%, 320px);
+}
+.plakette span {
+  font-size: 11px;
+}
+.plakette small {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.plakette-gross {
+  width: min(100%, 380px);
+  margin: 20px auto 0;
+  padding: 12px 20px 12px;
+  gap: 3px;
+}
+.plakette-gross strong {
+  font-size: 19px;
+}
+.plakette-gross span {
+  font-size: 13px;
+}
+.plakette-gross small {
+  font-size: 10.5px;
+}
+.plakette-notiz {
+  margin-top: 4px;
+  font-style: italic;
+}
+.plakette-notiz::before {
+  content: '„';
+}
+.plakette-notiz::after {
+  content: '“';
+}
+
+/* ---------- Staffelei ---------- */
+.staffelei-bereich {
+  display: grid;
+  justify-items: center;
+  margin-top: 6px;
+}
+.staffelei {
+  position: relative;
+  width: min(64%, 300px);
+  padding-top: 16px;
+  padding-bottom: 70px;
+}
+.beine {
+  position: absolute;
+  inset: 0 -6% 0 -6%;
+  width: 112%;
   height: 100%;
-  color: var(--muted);
+  z-index: 0;
+  stroke: #8b5a2b;
+  stroke-width: 9;
+  stroke-linecap: round;
+  fill: none;
 }
-.tile-missing svg {
-  width: 36px;
-  height: 36px;
-  stroke-width: 1.6;
+.beine .bein-hinten {
+  stroke: #6e4523;
+  stroke-width: 7;
 }
-.tile-missing.big {
-  min-height: 40vh;
-  color: #ccc;
+.beine .strebe {
+  stroke-width: 6;
+}
+.leinwand {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 5px solid #f3ead6;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 4px 10px 18px -6px rgba(40, 25, 10, 0.55), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transform: rotate(-1deg);
+}
+.leinwand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ablage {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 116%;
+  height: 12px;
+  margin: -3px -8% 0;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #a06a35, #6e4523);
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+}
+.sticker {
+  position: absolute;
+  top: -12px;
+  right: -14px;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #e4573d;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  transform: rotate(14deg);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+.staffelei-bereich .plakette {
+  margin-top: -40px;
+  z-index: 3;
+}
+
+/* Leere Wand */
+.leere-wand {
+  display: grid;
+  justify-items: center;
+  padding: 30px 0 10px;
+}
+.leere-wand .exponat {
+  width: min(60%, 240px);
+}
+.leere-wand .aufhaengung {
+  cursor: default;
 }
 
 /* Plus-Knopf */
@@ -190,7 +479,7 @@
   margin: 0;
   padding: 0;
   border: 0;
-  background: rgba(10, 10, 12, 0.96);
+  background: radial-gradient(ellipse 80% 50% at 50% 30%, #2a302c, #121513);
   color: #f4f1ec;
 }
 .viewer::backdrop {
@@ -222,34 +511,32 @@
   height: 22px;
   stroke-width: 2.2;
 }
-.viewer-img {
+.viewer-bild {
   flex: 1;
+  display: grid;
+  place-items: center;
   min-height: 0;
-  max-height: 64dvh;
-  width: 100%;
-  object-fit: contain;
-  margin: 10px 0 16px;
-  border-radius: 10px;
+  margin-top: 8px;
 }
-.viewer-info h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 600;
+.viewer-bild .rahmen {
+  width: fit-content;
+  max-width: 100%;
+}
+.viewer-bild img {
+  max-height: 56dvh;
+  width: auto;
+  max-width: 100%;
 }
 .viewer-date {
-  margin: 2px 0 0;
-  color: #a8a39c;
-  font-size: 14px;
-}
-.viewer-note {
   margin: 10px 0 0;
-  color: #d6d2cc;
-  line-height: 1.5;
+  color: #a8a39c;
+  font-size: 13px;
+  text-align: center;
 }
 .viewer-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
   margin-top: 16px;
 }
