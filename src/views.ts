@@ -4,8 +4,8 @@ import { homeApps, isOnHome } from './home';
 import { icon } from './icons';
 import type { Tab } from './router';
 
-export const esc = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+export { esc } from './shared/html';
+import { esc } from './shared/html';
 
 export function appIcon(app: FamilyApp, size: 'sm' | 'md' | 'lg' | 'xl' = 'md'): string {
   return `<span class="app-icon app-icon-${size}${app.status === 'bald' ? ' is-soon' : ''}" style="--app:${esc(app.farbe)}">${icon(app.icon)}</span>`;

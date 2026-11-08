@@ -7,6 +7,9 @@ import { isoWeek, sameDay, weekDays } from './dates';
 import { homeApps } from './home';
 import { icon } from './icons';
 import { appIcon, esc } from './views';
+import { readJson } from './shared/html';
+import { anstehend, gemerkt } from './ausflug/store';
+import { shortIso, isoDate } from './ausflug/days';
 import { openItems, upcomingDays, type KochbuchData } from './kochbuch';
 
 export interface WidgetContext {
@@ -108,6 +111,46 @@ const schnellzugriff: Widget = {
   },
 };
 
+// ---------- Gemerkte Ausflüge (aus der App „Ausflüge“) ----------
+const ausfluege: Widget = {
+  id: 'ausfluege',
+  render({ now }) {
+    const list = anstehend(gemerkt(), isoDate(now)).slice(0, 3);
+    if (!list.length) return null;
+    const items = list
+      .map(
+        (i) => `<li><a class="mini-row" href="ausflug/">
+          <span class="date-badge">${esc(i.datum ? shortIso(i.datum) : 'Jederzeit')}</span>
+          <span class="mini-text"><strong>${esc(i.titel)}</strong><span>${esc([i.ort, i.uhrzeit].filter(Boolean).join(' · '))}</span></span>${icon('weiter', 'mini-go')}</a></li>`,
+      )
+      .join('');
+    return card(this, 'Gemerkte Ausflüge', `<ul class="mini-list">${items}</ul>`, `<a class="widget-link" href="ausflug/">Neue suchen</a>`);
+  },
+};
+
+// ---------- Neu in der Galerie ----------
+interface GalerieVorschau {
+  anzahl: number;
+  neueste: { id: string; titel: string; datum: string; bild: string }[];
+}
+const galerie: Widget = {
+  id: 'galerie',
+  render() {
+    const v = readJson<GalerieVorschau | null>('galerie-vorschau', null);
+    if (!v?.neueste.length) return null;
+    const bilder = v.neueste
+      .filter((n) => n.bild.startsWith('data:image/'))
+      .map((n) => `<li><img src="${esc(n.bild)}" alt="${esc(n.titel || 'Werk')}" /></li>`)
+      .join('');
+    return card(
+      this,
+      'Neu in der Galerie',
+      `<a href="galerie/" class="thumbs-link"><ul class="thumbs">${bilder}</ul></a>`,
+      `<a class="widget-link" href="galerie/">${v.anzahl} ${v.anzahl === 1 ? 'Werk' : 'Werke'}</a>`,
+    );
+  },
+};
+
 // ---------- Demnächst im Store ----------
 const demnaechst: Widget = {
   id: 'demnaechst',
@@ -135,7 +178,7 @@ const mehr: Widget = {
   },
 };
 
-export const WIDGETS: Widget[] = [woche, essen, einkauf, schnellzugriff, demnaechst, mehr];
+export const WIDGETS: Widget[] = [woche, essen, einkauf, ausfluege, schnellzugriff, galerie, demnaechst, mehr];
 
 export function dashboardView(now = new Date(), kochbuch: KochbuchData | null = null): string {
   const ctx: WidgetContext = { now, kochbuch };

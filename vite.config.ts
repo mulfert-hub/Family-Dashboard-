@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -6,15 +7,25 @@ import { VitePWA } from 'vite-plugin-pwa';
 const base = process.env.BASE_PATH ?? '/';
 const version = (process.env.GITHUB_SHA ?? 'lokal').slice(0, 7);
 
-// Unterordner der eingebundenen Apps (z. B. kochbuch/): Diese Seiten gehören den Apps selbst und
-// ihren eigenen Service Workern – der Service Worker der Startseite darf sie nicht abfangen.
-const apps: Array<{ path?: string }> = JSON.parse(readFileSync(new URL('./apps.json', import.meta.url), 'utf8')).apps;
-const appPaths = apps.map((a) => a.path).filter((p): p is string => !!p);
+// Unterordner der Apps aus eigenen Repositories (z. B. kochbuch/): Diese Seiten gehören den Apps selbst
+// und ihren eigenen Service Workern – der Service Worker der Startseite darf sie nicht abfangen.
+// Apps ohne "repo" (Ausflüge, Galerie) liegen in diesem Repository und werden hier mitgebaut.
+const apps: Array<{ path?: string; repo?: string }> = JSON.parse(readFileSync(new URL('./apps.json', import.meta.url), 'utf8')).apps;
+const appPaths = apps.filter((a) => a.repo).map((a) => a.path).filter((p): p is string => !!p);
+const localPages = apps.filter((a) => !a.repo && a.path).map((a) => a.path!.replace(/\/$/, ''));
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default defineConfig({
   base,
   define: { __APP_VERSION__: JSON.stringify(version) },
+  build: {
+    rollupOptions: {
+      input: Object.fromEntries([
+        ['index', fileURLToPath(new URL('./index.html', import.meta.url))],
+        ...localPages.map((p) => [p, fileURLToPath(new URL(`./${p}/index.html`, import.meta.url))]),
+      ]),
+    },
+  },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',

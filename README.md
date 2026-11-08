@@ -3,7 +3,7 @@
 Die gemeinsame App der Familie, mit **einem** Icon auf dem Home-Bildschirm und drei Reitern:
 
 - **Übersicht** (Startseite): ein Dashboard aus Karten, derzeit die Woche mit Kalenderwoche, **was es zu essen gibt**
-  (Wochenplan aus dem Kochbuch), die offene **Einkaufsliste**, unsere Apps und was demnächst kommt. Neue Karten kommen nach und nach dazu (siehe unten).
+  (Wochenplan aus dem Kochbuch), die offene **Einkaufsliste**, gemerkte Ausflüge, neue Bilder aus der Galerie, unsere Apps und was demnächst kommt. Neue Karten kommen nach und nach dazu (siehe unten).
 - **Apps:** unsere Apps als Symbole, ein Tipp öffnet sie.
 - **Entdecken:** alle Apps wie in einem App Store, mit Highlight, Listen und Detailseiten (Beschreibung, Funktionen,
   Bildschirmfotos). „Laden“ legt eine App zu „Apps“, auf der Detailseite lässt sie sich wieder entfernen.
@@ -15,6 +15,8 @@ Derzeit:
 | --- | --- |
 | 🍳 [Kochbuch](https://github.com/mulfert-hub/Kochbuch) | live, unter `…/Family-Dashboard-/kochbuch/` |
 | 🏠 [Haushalt](https://github.com/mulfert-hub/Haushaltsapp) | live, unter `…/Family-Dashboard-/haushalt/` |
+| 📍 Ausflüge | live, unter `…/ausflug/` (in diesem Repository) |
+| 🖼️ Galerie | live, unter `…/galerie/` (in diesem Repository) |
 | ✅ Aufgaben & Taschengeld (für unsere Tochter) | in Arbeit |
 
 Adresse nach dem Veröffentlichen: **https://mulfert-hub.github.io/Family-Dashboard-/**
@@ -88,6 +90,19 @@ Voraussetzungen an die App (das Kochbuch erfüllt sie bereits):
 - Optional: `VITE_FAMILIE_URL` enthält die Adresse der Startseite, z. B. für einen Knopf „← Familie Ulfert“.
 
 Symbole für die Kacheln stehen in [`src/icons.ts`](src/icons.ts).
+
+## Ausflüge und Galerie
+
+Diese beiden Apps liegen direkt in diesem Repository (`src/ausflug/`, `src/galerie/`, Seiten `ausflug/index.html`,
+`galerie/index.html`). Sie haben in `apps.json` einen `path`, aber kein `repo`, und werden mit der Startseite gebaut.
+
+- **Ausflüge:** Claude (Opus 5.5) sucht mit Websuche und Seitenabruf Veranstaltungen und Ausflugsziele rund um den
+  Handy-Standort (Ortsname über OpenStreetMap/Nominatim, Wetter über Open-Meteo). Der API-Schlüssel ist derselbe wie im
+  Kochbuch (`kochbuch-anthropic-key`). Eine Suche kostet je nach Umfang etwa 20–60 Cent; die App zeigt die Kosten an.
+  Gemerkte Ideen erscheinen in der Übersicht.
+- **Galerie:** Fotos werden auf dem Handy verkleinert (max. 1800 px) und in IndexedDB gespeichert. Synchronisiert wird
+  über das private Daten-Repository des Kochbuchs, Ordner `galerie/` (`galerie.json` + `bilder/`). Ist die
+  Synchronisation im Kochbuch eingerichtet, übernimmt die Galerie sie; sonst lässt sie sich in der Galerie einrichten.
 
 ## Eine Karte zur Übersicht hinzufügen
 
