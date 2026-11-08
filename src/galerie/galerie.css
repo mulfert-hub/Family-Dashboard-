@@ -571,3 +571,52 @@ body {
 .viewer .act-danger {
   color: #ff9b8f;
 }
+
+/* Hinweis zur Synchronisation */
+.sync-banner {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  margin: 4px 0 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  font-size: 14.5px;
+}
+.sync-banner p {
+  margin: 0;
+}
+.sync-banner.is-error {
+  background: color-mix(in srgb, var(--danger) 12%, var(--surface));
+  border-color: transparent;
+}
+.status-liste {
+  margin: 4px 0 14px;
+  display: grid;
+  gap: 10px;
+}
+.status-liste div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+}
+.status-liste dt {
+  color: var(--muted);
+  font-size: 14px;
+}
+.status-liste dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.status-liste small {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.status-liste .is-error {
+  color: var(--danger);
+}

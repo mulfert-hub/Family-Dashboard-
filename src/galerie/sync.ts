@@ -51,13 +51,39 @@ async function lokalerStand(): Promise<Stand> {
 export interface SyncErgebnis {
   hoch: number;
   runter: number;
+  /** Bilder, die gerade nicht übertragen werden konnten (nächster Versuch beim nächsten Abgleich) */
+  fehlend: number;
+  /** Hat sich auf diesem Handy etwas geändert (neue, geänderte oder gelöschte Werke)? */
+  geaendert: boolean;
 }
 
-let laeuft: Promise<SyncErgebnis> | null = null;
+const stempel = async () =>
+  (await db.werke.toArray())
+    .map((w) => `${w.id}:${w.geaendert}`)
+    .sort()
+    .join('|');
 
-/** Einmal synchronisieren. Läuft schon eine, wird auf sie gewartet. */
+let laeuft: Promise<SyncErgebnis> | null = null;
+let nochmal = false;
+
+/**
+ * Synchronisieren. Läuft schon eine, wird danach direkt noch einmal synchronisiert –
+ * sonst blieben Bilder liegen, die während des Abgleichs dazugekommen sind.
+ */
 export function synchronisieren(onStatus?: (text: string) => void): Promise<SyncErgebnis> {
-  laeuft ??= lauf(onStatus).finally(() => (laeuft = null));
+  if (laeuft) {
+    nochmal = true;
+    return laeuft;
+  }
+  laeuft = (async () => {
+    let gesamt: SyncErgebnis = { hoch: 0, runter: 0, fehlend: 0, geaendert: false };
+    do {
+      nochmal = false;
+      const r = await lauf(onStatus);
+      gesamt = { hoch: gesamt.hoch + r.hoch, runter: gesamt.runter + r.runter, fehlend: r.fehlend, geaendert: gesamt.geaendert || r.geaendert };
+    } while (nochmal);
+    return gesamt;
+  })().finally(() => (laeuft = null));
   return laeuft;
 }
 
@@ -69,6 +95,8 @@ async function lauf(onStatus?: (text: string) => void): Promise<SyncErgebnis> {
   const gh = new GitHubClient(z.token, r.owner, r.repo);
   let hoch = 0;
   let runter = 0;
+  let fehlend = 0;
+  const vorher = await stempel();
 
   for (let versuch = 0; versuch < 4; versuch++) {
     onStatus?.('Synchronisiert …');
@@ -88,18 +116,32 @@ async function lauf(onStatus?: (text: string) => void): Promise<SyncErgebnis> {
 
     // 2. Bilder abgleichen (erst hochladen, dann die Liste schreiben – so fehlt anderen Handys nie ein Bild)
     const remoteBilder = new Map((await gh.list(IMG)).map((f) => [f.path.slice(IMG.length + 1).replace(/\.\w+$/, ''), f]));
+    fehlend = 0;
     for (const w of neu.werke) {
       const lokal = await db.bilder.get(w.id);
-      if (lokal && !remoteBilder.has(w.id)) {
-        onStatus?.(`Lädt Bild hoch: ${w.titel || 'ohne Titel'}`);
-        await gh.write(`${IMG}/${w.id}.jpg`, await blobToBase64(lokal.blob), `Galerie: Bild ${w.titel || w.id}`);
-        hoch++;
-      } else if (!lokal && remoteBilder.has(w.id)) {
-        onStatus?.(`Lädt Bild: ${w.titel || 'ohne Titel'}`);
-        const blob = await gh.readBlob(remoteBilder.get(w.id)!.path);
-        const jpeg = blob.type ? blob : new Blob([blob], { type: 'image/jpeg' });
-        await db.bilder.put({ id: w.id, blob: jpeg, thumb: await thumbFrom(jpeg) });
-        runter++;
+      try {
+        if (lokal && !remoteBilder.has(w.id)) {
+          onStatus?.(`Lädt Bild hoch: ${w.titel || 'ohne Titel'}`);
+          try {
+            await gh.write(`${IMG}/${w.id}.jpg`, await blobToBase64(lokal.blob), `Galerie: Bild ${w.titel || w.id}`);
+          } catch (e) {
+            // Gibt es die Datei schon (z. B. von einem abgebrochenen Versuch), ist das in Ordnung
+            if (!(e instanceof ConflictError)) throw e;
+          }
+          hoch++;
+        } else if (!lokal && remoteBilder.has(w.id)) {
+          onStatus?.(`Lädt Bild: ${w.titel || 'ohne Titel'}`);
+          const blob = await gh.readBlob(remoteBilder.get(w.id)!.path);
+          const jpeg = blob.type.startsWith('image/') ? blob : new Blob([blob], { type: 'image/jpeg' });
+          await db.bilder.put({ id: w.id, blob: jpeg, thumb: await thumbFrom(jpeg) });
+          runter++;
+        } else if (!lokal) {
+          fehlend++; // Bild ist noch auf keinem Server – das andere Handy lädt es hoffentlich gleich hoch
+        }
+      } catch (e) {
+        if (e instanceof AuthError) throw e;
+        console.warn('Galerie: Bild nicht übertragen', w.id, e);
+        fehlend++;
       }
     }
 
@@ -121,7 +163,7 @@ async function lauf(onStatus?: (text: string) => void): Promise<SyncErgebnis> {
       if (f && !lebend.has(g.id)) await gh.remove(f.path, f.sha, 'Galerie: Bild entfernt').catch(() => {});
     }
     writeJson('galerie-letzte-sync', Date.now());
-    return { hoch, runter };
+    return { hoch, runter, fehlend, geaendert: (await stempel()) !== vorher };
   }
   throw new Error('Andere Handys speichern gerade gleichzeitig – bitte gleich noch einmal versuchen.');
 }
