@@ -8,7 +8,7 @@ import { icon } from '../icons';
 import { backBar, esc, writeJson } from '../shared/html';
 import { db, neueId, type Werk } from './db';
 import { dataUrl, prepare } from './image';
-import { exponat, gerahmt, inventarNummern, KUENSTLERIN, leereWand, plakette, staffelei, TECHNIKEN } from './museum';
+import { gerahmt, inventarNummern, KUENSTLERIN, leereWand, museumsraum, plakette, TECHNIKEN, wandstueck } from './museum';
 import { AuthError, einrichten, letzteSync, synchronisieren, trennen, zugang } from './sync';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -26,6 +26,9 @@ let urls: string[] = [];
 let syncText = '';
 let syncFehler = false;
 let letzteFehlend = 0;
+/** Reihenfolge der Werke im Raum (neueste zuerst) und welches gerade vorn hängt */
+let reihe: Werk[] = [];
+let aktuelleId: string | null = null;
 
 // ---------- Gerüst ----------
 function shell(): void {
@@ -39,6 +42,7 @@ function shell(): void {
       </header>
       <div id="sync-banner"></div>
       <div id="werke"></div>
+      <div class="raum-leiste" id="raum-leiste" aria-live="polite"></div>
     </main>
     <label class="fab" aria-label="Neues Werk aufhängen">
       ${icon('plus')}
@@ -53,39 +57,74 @@ async function renderWerke(): Promise<void> {
   const bilder = new Map((await db.bilder.toArray()).map((b) => [b.id, b]));
   urls.forEach((u) => URL.revokeObjectURL(u));
   urls = [];
+  reihe = werke;
   const el = $('#werke');
   if (!werke.length) {
     el.innerHTML = leereWand();
+    $('#raum-leiste').innerHTML = '';
     return;
   }
   const inv = inventarNummern(werke);
+  // An der Wand hängt das große Bild – so bleibt es auch auf großen Handys scharf
   const img = (w: Werk) => {
     const b = bilder.get(w.id);
     if (!b) return `<span class="leer-bild">${icon('galerie')}</span>`;
-    const u = URL.createObjectURL(b.thumb);
+    const u = URL.createObjectURL(b.blob);
     urls.push(u);
-    return `<img src="${u}" alt="" loading="lazy" />`;
+    return `<img src="${u}" alt="" loading="lazy" decoding="async" />`;
   };
-  // Das zuletzt aufgehängte Werk steht vorn auf der Staffelei
+  // Das zuletzt aufgehängte Werk bekommt den „Neu!“-Aufkleber
   const neuestes = werke.reduce((a, b) => (b.erstellt > a.erstellt ? b : a));
-  // Säle nach Monaten
-  const saele = new Map<string, Werk[]>();
-  for (const w of werke) {
-    const k = w.datum.slice(0, 7);
-    saele.set(k, [...(saele.get(k) ?? []), w]);
-  }
-  el.innerHTML =
-    staffelei(neuestes, img(neuestes), inv.get(neuestes.id)) +
-    [...saele]
-      .map(
-        ([monat, list]) => `<section class="saal">
-          <h2><span class="saal-schild">Saal ${esc(MONAT.format(parseIso(`${monat}-01`)))}</span><span class="saal-anzahl">${list.length} ${list.length === 1 ? 'Werk' : 'Werke'}</span></h2>
-          <ul class="wand">${list.map((w) => exponat(w, img(w), inv.get(w.id))).join('')}</ul>
-        </section>`,
-      )
-      .join('');
+  el.innerHTML = museumsraum(
+    werke.map((w) => wandstueck(w, img(w), inv.get(w.id), w.id === neuestes.id)),
+    werke.length > 1,
+  );
+  const spur = $<HTMLUListElement>('#spur');
+  // Nach dem Neuzeichnen (z. B. Synchronisation) beim selben Werk bleiben
+  const start = Math.max(0, werke.findIndex((w) => w.id === aktuelleId));
+  spur.scrollLeft = start * spur.clientWidth;
+  let raf = 0;
+  spur.addEventListener(
+    'scroll',
+    () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(raumStand);
+    },
+    { passive: true },
+  );
+  raumStand();
   void vorschauSpeichern(werke, bilder);
 }
+
+/** Welches Werk hängt gerade vorn? Zähler, Saal und Pfeile anpassen */
+function raumStand(): void {
+  const spur = root.querySelector<HTMLUListElement>('#spur');
+  if (!spur || !reihe.length) return;
+  const i = Math.min(reihe.length - 1, Math.max(0, Math.round(spur.scrollLeft / Math.max(1, spur.clientWidth))));
+  const w = reihe[i];
+  aktuelleId = w.id;
+  root.querySelector<HTMLButtonElement>('.raum-pfeil-links')?.toggleAttribute('disabled', i === 0);
+  root.querySelector<HTMLButtonElement>('.raum-pfeil-rechts')?.toggleAttribute('disabled', i === reihe.length - 1);
+  const punkte =
+    reihe.length > 1 && reihe.length <= 15
+      ? `<span class="raum-punkte">${reihe.map((_, k) => `<button type="button" class="punkt${k === i ? ' is-aktiv' : ''}" data-geh="${k}" aria-label="Werk ${k + 1}"></button>`).join('')}</span>`
+      : '';
+  $('#raum-leiste').innerHTML = `
+    <span class="raum-saal">Saal ${esc(MONAT.format(parseIso(w.datum)))}</span>
+    ${punkte}
+    <span class="raum-zahl">${i + 1} / ${reihe.length}</span>`;
+}
+
+/** Im Raum zu einem Werk gehen (Pfeile, Punkte, Tastatur, Wischen in der Großansicht) */
+function geheZu(i: number, sanft = true): void {
+  const spur = root.querySelector<HTMLUListElement>('#spur');
+  if (!spur || !reihe.length) return;
+  const ziel = Math.min(reihe.length - 1, Math.max(0, i));
+  spur.scrollTo({ left: ziel * spur.clientWidth, behavior: sanft ? 'smooth' : 'auto' });
+  aktuelleId = reihe[ziel].id;
+}
+
+const aktuellerIndex = () => Math.max(0, reihe.findIndex((w) => w.id === aktuelleId));
 
 function renderSync(): void {
   const z = zugang();
@@ -261,10 +300,18 @@ async function zeigeWerk(id: string): Promise<void> {
   const u = b ? URL.createObjectURL(b.blob) : '';
   if (u) urls.push(u);
   const inv = inventarNummern(await db.werke.toArray()).get(id);
+  const i = reihe.findIndex((x) => x.id === id);
   viewer.innerHTML = `
     <div class="viewer-body">
-      <div class="viewer-top"><button type="button" class="round" data-close aria-label="Schließen">${icon('schliessen')}</button></div>
-      <div class="viewer-bild">${gerahmt(w, u ? `<img src="${u}" alt="${esc(w.titel)}" />` : `<span class="leer-bild">${icon('galerie')}</span>`)}</div>
+      <div class="viewer-top">
+        <span class="viewer-zahl">${i >= 0 && reihe.length > 1 ? `${i + 1} / ${reihe.length}` : ''}</span>
+        <button type="button" class="round" data-close aria-label="Schließen">${icon('schliessen')}</button>
+      </div>
+      <div class="viewer-bild">
+        ${gerahmt(w, u ? `<img src="${u}" alt="${esc(w.titel)}" />` : `<span class="leer-bild">${icon('galerie')}</span>`)}
+        ${i > 0 ? `<button type="button" class="round viewer-pfeil viewer-pfeil-links" data-blaettern="-1" aria-label="Vorheriges Werk">${icon('zurueck')}</button>` : ''}
+        ${i >= 0 && i < reihe.length - 1 ? `<button type="button" class="round viewer-pfeil viewer-pfeil-rechts" data-blaettern="1" aria-label="Nächstes Werk">${icon('weiter')}</button>` : ''}
+      </div>
       ${plakette(w, inv, 'gross')}
       <p class="viewer-date">Entstanden am ${esc(TAG.format(parseIso(w.datum)))}</p>
       <div class="viewer-actions">
@@ -273,7 +320,15 @@ async function zeigeWerk(id: string): Promise<void> {
         <button type="button" class="act act-danger" data-loeschen="${esc(id)}">${icon('muell')}<span>Abhängen</span></button>
       </div>
     </div>`;
-  viewer.showModal();
+  if (!viewer.open) viewer.showModal();
+}
+
+/** In der Großansicht zum Nachbarbild wechseln – der Raum dahinter geht mit */
+function blaettern(schritt: number): void {
+  const i = aktuellerIndex() + schritt;
+  if (i < 0 || i >= reihe.length) return;
+  geheZu(i, false);
+  void zeigeWerk(reihe[i].id);
 }
 
 async function loeschen(id: string): Promise<void> {
@@ -362,8 +417,20 @@ root.addEventListener('click', (e) => {
     (t.closest('dialog') as HTMLDialogElement).close();
     return;
   }
+  if (wischte) return;
   const werk = t.closest<HTMLButtonElement>('[data-werk]');
-  if (werk) return void zeigeWerk(werk.dataset.werk!);
+  if (werk) {
+    // Ein halb hereingewischtes Nachbarbild erst nach vorn holen
+    const i = reihe.findIndex((w) => w.id === werk.dataset.werk);
+    if (i >= 0 && i !== aktuellerIndex()) geheZu(i);
+    return void zeigeWerk(werk.dataset.werk!);
+  }
+  const schritt = t.closest<HTMLButtonElement>('[data-schritt]');
+  if (schritt) return geheZu(aktuellerIndex() + Number(schritt.dataset.schritt));
+  const geh = t.closest<HTMLButtonElement>('[data-geh]');
+  if (geh) return geheZu(Number(geh.dataset.geh));
+  const nav = t.closest<HTMLButtonElement>('[data-blaettern]');
+  if (nav) return blaettern(Number(nav.dataset.blaettern));
   const bearb = t.closest<HTMLButtonElement>('[data-bearbeiten]');
   if (bearb) {
     const id = bearb.dataset.bearbeiten!;
@@ -399,6 +466,36 @@ root.addEventListener('click', (e) => {
     }
   }
 });
+
+// Wischen in der Großansicht: links/rechts zum nächsten Werk
+let wischStart: { x: number; y: number } | null = null;
+let wischte = false;
+root.addEventListener('pointerdown', (e) => {
+  wischte = false;
+  wischStart = (e.target as HTMLElement).closest('#viewer') ? { x: e.clientX, y: e.clientY } : null;
+});
+root.addEventListener('pointerup', (e) => {
+  if (!wischStart) return;
+  const dx = e.clientX - wischStart.x;
+  const dy = e.clientY - wischStart.y;
+  wischStart = null;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    wischte = true; // der folgende Klick soll die Großansicht nicht schließen
+    setTimeout(() => (wischte = false), 400);
+    blaettern(dx < 0 ? 1 : -1);
+  }
+});
+root.addEventListener('pointercancel', () => (wischStart = null));
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  if ((e.target as HTMLElement).closest('input, textarea, select') || $<HTMLDialogElement>('#sheet').open) return;
+  const schritt = e.key === 'ArrowLeft' ? -1 : 1;
+  if ($<HTMLDialogElement>('#viewer').open) blaettern(schritt);
+  else if (e.target !== root.querySelector('#spur')) geheZu(aktuellerIndex() + schritt); // in der Spur scrollt der Browser selbst
+});
+
+window.addEventListener('resize', () => geheZu(aktuellerIndex(), false));
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') void sync();
