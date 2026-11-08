@@ -73,14 +73,14 @@
     {
       "id": "galerie",
       "name": "Galerie",
-      "untertitel": "Zeichnungen und Basteleien unserer Tochter",
-      "beschreibung": "Unsere kleine Ausstellung: Zeichnungen, Bilder und Basteleien fotografieren, mit Titel und Datum versehen und nach Monaten sortiert ansehen. Über das GitHub-Daten-Repository sehen alle Familien-Handys dieselbe Galerie.",
+      "untertitel": "Unser Museum für Zeichnungen und Basteleien",
+      "beschreibung": "Willkommen im Museum Ulfert! Jedes Kunstwerk hängt gerahmt an der Wand, mit Messingplakette für Titel, Technik und Inventarnummer. Das neueste Werk steht auf der Staffelei. Über das GitHub-Daten-Repository sehen alle Familien-Handys dieselbe Ausstellung.",
       "funktionen": [
         "Fotos aufnehmen oder aus der Mediathek wählen",
-        "Titel, Datum und Notiz zu jedem Werk",
-        "Nach Jahren und Monaten sortiert",
-        "Auf allen Handys gleich (Synchronisation)",
-        "Teilen, z. B. mit Oma und Opa"
+        "Goldrahmen, Holz, Schwarz, Weiß oder Bunt – jedes Bild hängt ein bisschen schief",
+        "Plakette mit Titel, Technik („Wachsmalstift auf Papier“) und Inventarnummer",
+        "Säle nach Monaten, das Neueste auf der Staffelei",
+        "Auf allen Handys gleich (Synchronisation) und teilbar"
       ],
       "kategorie": "Erinnerungen",
       "icon": "galerie",

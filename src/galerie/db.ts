@@ -6,6 +6,8 @@ export interface Werk {
   titel: string;
   datum: string; // JJJJ-MM-TT, wann das Werk entstanden ist
   notiz: string;
+  /** z. B. „Wachsmalstift“ – steht auf der Plakette (ältere Werke haben das Feld nicht) */
+  technik?: string;
   erstellt: number;
   geaendert: number;
 }

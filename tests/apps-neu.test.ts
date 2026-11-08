@@ -70,3 +70,25 @@ describe('Galerie: zusammenführen', () => {
     expect(m.geloescht.map((g) => g.id)).toEqual(['x', 'y']);
   });
 });
+
+import { inventarNummern, neigungFuer, rahmenFuer, RAHMEN, technikZeile } from '../src/galerie/museum';
+
+describe('Galerie: Museum', () => {
+  it('Rahmen und Neigung sind je Werk immer gleich und im erlaubten Bereich', () => {
+    for (const id of ['a', 'mw7j2tsl-nivmhi', 'xyz-123']) {
+      expect(rahmenFuer(id)).toBe(rahmenFuer(id));
+      expect(RAHMEN).toContain(rahmenFuer(id));
+      expect(Math.abs(neigungFuer(id))).toBeLessThanOrEqual(1.5);
+    }
+  });
+  it('Plakette: Technik und Jahr', () => {
+    expect(technikZeile({ technik: 'Wachsmalstift', datum: '2026-11-08' })).toBe('Wachsmalstift auf Papier, 2026');
+    expect(technikZeile({ technik: 'Knete', datum: '2025-03-01' })).toBe('Knete, 2025');
+    expect(technikZeile({ datum: '2026-01-01' })).toBe('2026');
+  });
+  it('Inventarnummern nach Reihenfolge des Aufhängens', () => {
+    const w = (id: string, erstellt: number) => ({ id, titel: '', datum: '2026-11-01', notiz: '', erstellt, geaendert: erstellt });
+    const inv = inventarNummern([w('b', 20), w('a', 10), w('c', 30)]);
+    expect([inv.get('a'), inv.get('b'), inv.get('c')]).toEqual(['001', '002', '003']);
+  });
+});
