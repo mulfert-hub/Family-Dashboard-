@@ -8,7 +8,7 @@ import { icon } from '../icons';
 import { backBar, esc, writeJson } from '../shared/html';
 import { db, neueId, type Werk } from './db';
 import { dataUrl, prepare } from './image';
-import { exponat, gerahmt, inventarNummern, leereWand, plakette, staffelei, TECHNIKEN } from './museum';
+import { exponat, gerahmt, inventarNummern, KUENSTLERIN, leereWand, plakette, staffelei, TECHNIKEN } from './museum';
 import { AuthError, einrichten, letzteSync, synchronisieren, trennen, zugang } from './sync';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -32,7 +32,7 @@ function shell(): void {
     <main class="view sub-view">
       ${backBar()}
       <header class="large-head">
-        <p class="eyebrow">Museum Ulfert · Eintritt frei</p>
+        <p class="eyebrow">Museum Ulfert · Werke von ${KUENSTLERIN}</p>
         <h1>Galerie</h1>
         <p class="sync-line" id="sync"></p>
       </header>
@@ -154,7 +154,7 @@ function sheetForm(w: Partial<Werk>, vorschau: string, neu: boolean): void {
         </select></div>
       <div class="field"><label class="label" for="datum">Entstanden am</label>
         <input class="input" id="datum" name="datum" type="date" value="${esc(w.datum ?? isoDate(new Date()))}" max="${isoDate(new Date())}" /></div>
-      <div class="field"><label class="label" for="notiz">Was die Künstlerin dazu sagt</label>
+      <div class="field"><label class="label" for="notiz">Was ${KUENSTLERIN} dazu sagt</label>
         <textarea class="input" id="notiz" name="notiz" rows="2" placeholder="Was sie dazu erzählt hat …">${esc(w.notiz ?? '')}</textarea></div>
     </form>`;
   sheet.showModal();

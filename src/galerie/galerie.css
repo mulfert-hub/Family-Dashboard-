@@ -296,6 +296,10 @@ body {
 .plakette-gross small {
   font-size: 10.5px;
 }
+.plakette small .inv {
+  font-size: inherit;
+  white-space: nowrap;
+}
 .plakette-notiz {
   margin-top: 4px;
   font-style: italic;

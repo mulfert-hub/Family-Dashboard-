@@ -3,6 +3,9 @@
 import { esc } from '../shared/html';
 import type { Werk } from './db';
 
+/** Die Künstlerin – steht auf jeder Plakette */
+export const KUENSTLERIN = 'Thea';
+
 export const TECHNIKEN = [
   'Buntstift',
   'Wachsmalstift',
@@ -48,12 +51,13 @@ export function technikZeile(w: Pick<Werk, 'technik' | 'datum'>): string {
 
 /** klein: an der Wand (knapp), mittel: Staffelei, gross: Großansicht mit Notiz */
 export function plakette(w: Werk, inv: string | undefined, groesse: 'klein' | 'mittel' | 'gross' = 'klein'): string {
-  const sammlung = groesse === 'klein' ? (inv ? `Inv.-Nr. ${inv}` : '') : `Sammlung Familie Ulfert${inv ? ` · Inv.-Nr. ${inv}` : ''}`;
+  const nr = inv ? `<span class="inv">Inv.-Nr. ${inv}</span>` : '';
+  const unten = groesse === 'klein' ? `${KUENSTLERIN}${nr ? ` · ${nr}` : ''}` : `Sammlung Familie Ulfert${nr ? ` · ${nr}` : ''}`;
   return `<div class="plakette plakette-${groesse}" lang="de">
       <strong>${w.titel ? `„${esc(w.titel)}“` : 'Ohne Titel'}</strong>
-      <span>${esc(technikZeile(w))}</span>
+      <span>${groesse === 'klein' ? '' : `${KUENSTLERIN} · `}${esc(technikZeile(w))}</span>
       ${groesse === 'gross' && w.notiz ? `<span class="plakette-notiz">${esc(w.notiz)}</span>` : ''}
-      ${sammlung ? `<small>${esc(sammlung)}</small>` : ''}
+      <small>${unten}</small>
     </div>`;
 }
 
@@ -102,7 +106,7 @@ export function leereWand(): string {
   return `<div class="leere-wand">
       <div class="exponat" style="--neigung:-1deg">
         <span class="aufhaengung">${DRAHT}<span class="rahmen rahmen-gold"><span class="passepartout"><span class="leer-bild">?</span></span></span></span>
-        <div class="plakette"><strong>Hier könnte Ihr Meisterwerk hängen</strong><span>Mit + ein Bild fotografieren</span><small>Sammlung Familie Ulfert</small></div>
+        <div class="plakette"><strong>Hier könnte Ihr Meisterwerk hängen</strong><span>Mit + ein Bild von ${KUENSTLERIN} fotografieren</span><small>Künstlerin: ${KUENSTLERIN}</small></div>
       </div>
     </div>`;
 }
